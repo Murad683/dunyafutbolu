@@ -1,0 +1,229 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Dünya Futbolu — Design System
+ * All colors in oklch. Mapped from the brand spec (red #8B0000, gold #D4A017).
+ */
+
+@theme inline {
+  /* Radii */
+  --radius: 0.625rem;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-card: 10px;
+  --radius-badge: 4px;
+  --radius-pill: 999px;
+  --radius-modal: 16px;
+  --radius-input: 8px;
+  --radius-button: 8px;
+
+  /* Shadcn semantic tokens */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Brand */
+  --color-brand-red: var(--brand-red);
+  --color-brand-red-hover: var(--brand-red-hover);
+  --color-brand-gold: var(--brand-gold);
+  --color-brand-gold-light: var(--brand-gold-light);
+
+  /* Surface */
+  --color-surface-white: var(--surface-white);
+  --color-surface-off: var(--surface-off);
+  --color-surface-light: var(--surface-light);
+  --color-surface-border: var(--surface-border);
+  --color-surface-divider: var(--surface-divider);
+
+  /* Text */
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-inverse: var(--text-inverse);
+  --color-text-link: var(--text-link);
+
+  /* Live */
+  --color-live-red: var(--live-red);
+  --color-live-bg: var(--live-bg);
+
+  /* Typography */
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-serif: Georgia, Cambria, serif;
+
+  --text-hero: 2.25rem;
+  --text-hero--line-height: 1.15;
+  --text-hero--letter-spacing: -0.02em;
+  --text-hero--font-weight: 700;
+
+  --text-card-xl: 1.375rem;
+  --text-card-xl--line-height: 1.3;
+  --text-card-xl--font-weight: 700;
+
+  --text-card-lg: 1.125rem;
+  --text-card-lg--line-height: 1.4;
+  --text-card-lg--font-weight: 600;
+
+  --text-card-md: 0.9375rem;
+  --text-card-md--line-height: 1.5;
+  --text-card-md--font-weight: 500;
+
+  --text-card-sm: 0.8125rem;
+  --text-card-sm--line-height: 1.5;
+  --text-card-sm--font-weight: 400;
+
+  --text-meta: 0.75rem;
+  --text-meta--line-height: 1.4;
+  --text-meta--font-weight: 400;
+
+  --text-badge: 0.6875rem;
+  --text-badge--line-height: 1;
+  --text-badge--font-weight: 700;
+  --text-badge--letter-spacing: 0.05em;
+
+  /* Shadows */
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.10), 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-header: 0 1px 0 rgba(229, 226, 220, 1), 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-modal: 0 24px 64px rgba(0, 0, 0, 0.18), 0 8px 24px rgba(0, 0, 0, 0.10);
+  --shadow-dropdown: 0 8px 24px rgba(0, 0, 0, 0.10), 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  /* Animations */
+  --animate-fade-in: fade-in 0.2s ease-out;
+  --animate-slide-up: slide-up 0.3s ease-out;
+  --animate-slide-down: slide-down 0.2s ease-out;
+  --animate-pulse-dot: pulse-dot 1.5s ease-in-out infinite;
+  --animate-spin-slow: spin-slow 1.2s linear infinite;
+
+  @keyframes fade-in {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  @keyframes slide-up {
+    0% { opacity: 0; transform: translateY(12px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slide-down {
+    0% { opacity: 0; transform: translateY(-8px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  @keyframes spin-slow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+}
+
+:root {
+  /* Shadcn baseline (kept for ui/* components compatibility) */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.18 0.01 264);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.01 264);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.01 264);
+  --primary: oklch(0.36 0.18 25);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.96 0.005 80);
+  --secondary-foreground: oklch(0.18 0.01 264);
+  --muted: oklch(0.96 0.005 80);
+  --muted-foreground: oklch(0.55 0.01 264);
+  --accent: oklch(0.96 0.005 80);
+  --accent-foreground: oklch(0.18 0.01 264);
+  --destructive: oklch(0.6 0.22 27);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.91 0.005 80);
+  --input: oklch(0.91 0.005 80);
+  --ring: oklch(0.36 0.18 25);
+
+  /* Brand — Dünya Futbolu */
+  --brand-red:        oklch(0.36 0.18 25);   /* ~ #8B0000 */
+  --brand-red-hover:  oklch(0.42 0.20 25);   /* ~ #A50000 */
+  --brand-gold:       oklch(0.71 0.14 75);   /* ~ #D4A017 */
+  --brand-gold-light: oklch(0.82 0.15 80);   /* ~ #F5C842 */
+
+  /* Surfaces */
+  --surface-white:    oklch(1 0 0);
+  --surface-off:      oklch(0.975 0.005 85); /* #F8F7F4 */
+  --surface-light:    oklch(0.955 0.006 85); /* #F2F0EB */
+  --surface-border:   oklch(0.91 0.006 85);  /* #E5E2DC */
+  --surface-divider:  oklch(0.93 0.006 85);  /* #EDEBE6 */
+
+  /* Text */
+  --text-primary:   oklch(0.20 0 0);   /* #1A1A1A */
+  --text-secondary: oklch(0.36 0 0);   /* #4A4A4A */
+  --text-muted:     oklch(0.60 0 0);   /* #8A8A8A */
+  --text-inverse:   oklch(1 0 0);
+  --text-link:      oklch(0.36 0.18 25);
+
+  /* Live */
+  --live-red: oklch(0.62 0.23 27);  /* #E53E3E */
+  --live-bg:  oklch(0.97 0.02 27);  /* #FFF5F5 */
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: var(--surface-white);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  img {
+    display: block;
+    max-width: 100%;
+  }
+  button {
+    cursor: pointer;
+    font-family: inherit;
+  }
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+}
+
+@layer utilities {
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
