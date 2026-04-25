@@ -4,6 +4,6 @@ console.log("APP.CONFIG.TS IS LOADED! PRESET IS VERCEL");
 
 export default defineConfig({
   server: {
-    preset: 'vercel'
+    preset: 'netlify'
   }
 })
