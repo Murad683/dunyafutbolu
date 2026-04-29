@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* { box-sizing: border-box; }
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  @apply bg-gray-50 font-sans text-gray-900;
+  margin: 0;
+  min-width: 320px;
+}
+
+.ql-container {
+  min-height: 12rem;
+}
+
+.ql-editor {
+  min-height: 12rem;
+}

@@ -4,9 +4,13 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
+    "predev": "node scripts/ensure-rollup-native.mjs",
     "dev": "vite dev",
+    "prebuild": "node scripts/ensure-rollup-native.mjs",
     "build": "vite build",
+    "prebuild:dev": "node scripts/ensure-rollup-native.mjs",
     "build:dev": "vite build --mode development",
+    "prepreview": "node scripts/ensure-rollup-native.mjs",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write ."

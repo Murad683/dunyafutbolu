@@ -1,6 +1,8 @@
+import { useState, type ReactNode } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 
-import appCss from "../styles.css?url";
+import "../styles.css";
 
 function NotFoundComponent() {
   return (
@@ -65,7 +67,6 @@ export const Route = createRootRoute({
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/fac2b5d7-8f8a-4a02-ac77-fa4cc1a3307c/id-preview-e732beed--2a3d5785-897c-4dbc-a403-516c1cd08d53.lovable.app-1777121312725.png" },
     ],
     links: [
-      { rel: "stylesheet", href: appCss },
       {
         rel: "preconnect",
         href: "https://fonts.googleapis.com",
@@ -82,7 +83,7 @@ export const Route = createRootRoute({
   errorComponent: ErrorComponent,
 });
 
-function RootShell({ children }: { children: React.ReactNode }) {
+function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="az">
       <head>
@@ -97,5 +98,21 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
-  return <Outlet />;
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            retry: 1,
+            refetchOnWindowFocus: false,
+          },
+        },
+      }),
+  );
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Outlet />
+    </QueryClientProvider>
+  );
 }
