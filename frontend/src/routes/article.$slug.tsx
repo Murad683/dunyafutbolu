@@ -16,7 +16,7 @@ export const Route = createFileRoute("/article/$slug")({
       
       const article = toNewsArticle(res.data);
       
-      let relatedArticles = [];
+      let relatedArticles: ReturnType<typeof toNewsArticle>[] = [];
       try {
         const relatedRes = await api.get<PaginatedResponse<Article>>('/articles', {
           params: { categorySlug: res.data.category.slug, limit: 4 }
