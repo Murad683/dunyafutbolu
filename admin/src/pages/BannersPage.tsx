@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as Dialog from '@radix-ui/react-dialog';
-import { Pencil, X, Trash2 } from 'lucide-react';
+import { Pencil, X } from 'lucide-react';
 import { toast } from 'sonner';
 import ImageUploadField from '../components/common/ImageUploadField';
 import api from '../lib/api';
