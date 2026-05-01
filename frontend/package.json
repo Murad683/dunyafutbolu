@@ -7,16 +7,13 @@
     "predev": "node scripts/ensure-rollup-native.mjs",
     "dev": "vite dev",
     "prebuild": "node scripts/ensure-rollup-native.mjs",
-    "build": "vinxi build",
+    "build": "vite build",
     "prebuild:dev": "node scripts/ensure-rollup-native.mjs",
-    "build:dev": "vinxi build --mode development",
+    "build:dev": "vite build --mode development",
     "prepreview": "node scripts/ensure-rollup-native.mjs",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write ."
-  },
-  "engines": {
-    "node": "20.x"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.25.5",
