@@ -1,6 +1,6 @@
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { Outlet, Link, createRootRoute } from "@tanstack/react-router";
 
 import "../styles.css";
 
@@ -49,53 +49,10 @@ function ErrorComponent({ error }: { error: Error }) {
 }
 
 export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Dünya Futbolu" },
-      { name: "description", content: "Azərbaycanın futbol portalı - xəbərlər və canlı nəticələr." },
-      { name: "author", content: "Dünya Futbolu" },
-      { property: "og:title", content: "Dünya Futbolu" },
-      { property: "og:description", content: "Azərbaycanın futbol portalı - xəbərlər və canlı nəticələr." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Dünya Futbolu" },
-      { name: "twitter:description", content: "Azərbaycanın futbol portalı - xəbərlər və canlı nəticələr." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/fac2b5d7-8f8a-4a02-ac77-fa4cc1a3307c/id-preview-e732beed--2a3d5785-897c-4dbc-a403-516c1cd08d53.lovable.app-1777121312725.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/fac2b5d7-8f8a-4a02-ac77-fa4cc1a3307c/id-preview-e732beed--2a3d5785-897c-4dbc-a403-516c1cd08d53.lovable.app-1777121312725.png" },
-    ],
-    links: [
-      {
-        rel: "preconnect",
-        href: "https://fonts.googleapis.com",
-      },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
-      },
-    ],
-  }),
-  shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
 });
-
-function RootShell({ children }: { children: ReactNode }) {
-  return (
-    <html lang="az">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  );
-}
 
 function RootComponent() {
   const [queryClient] = useState(
