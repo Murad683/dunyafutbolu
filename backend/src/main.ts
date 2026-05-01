@@ -7,7 +7,7 @@ import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.enableCors({ origin: ['http://localhost:5173', 'http://localhost:5174'], credentials: true });
+  app.enableCors({ origin: true, credentials: true });
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.useStaticAssets(join(process.cwd(), 'uploads'), { prefix: '/uploads/' });
@@ -21,8 +21,9 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  await app.listen(3001);
-  console.log('API running on http://localhost:3001/api');
-  console.log('Swagger docs at http://localhost:3001/api/docs');
+  const port = process.env.PORT || 3001;
+  await app.listen(port);
+  console.log(`API running on port ${port}`);
+  console.log(`Swagger docs at http://localhost:${port}/api/docs`);
 }
-bootstrap();
+bootstrap();

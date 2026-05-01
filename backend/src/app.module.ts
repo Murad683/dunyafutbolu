@@ -15,16 +15,29 @@ import { NewsletterModule } from './newsletter/newsletter.module';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (c: ConfigService) => ({
-        type: 'postgres',
-        host: c.get('DB_HOST'),
-        port: parseInt(c.get<string>('DB_PORT') || '5432', 10),
-        username: c.get('DB_USERNAME'),
-        password: c.get('DB_PASSWORD'),
-        database: c.get('DB_NAME'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: true,
-      }),
+      useFactory: (c: ConfigService) => {
+        const databaseUrl = c.get<string>('DATABASE_URL');
+        const ssl = c.get<string>('DB_SSL') === 'true' ? { rejectUnauthorized: false } : false;
+
+        return databaseUrl
+          ? {
+              type: 'postgres' as const,
+              url: databaseUrl,
+              ssl,
+              entities: [__dirname + '/**/*.entity{.ts,.js}'],
+              synchronize: true,
+            }
+          : {
+              type: 'postgres' as const,
+              host: c.get('DB_HOST') || 'localhost',
+              port: parseInt(c.get<string>('DB_PORT') || '5432', 10),
+              username: c.get('DB_USERNAME') || 'postgres',
+              password: c.get('DB_PASSWORD') || 'postgres',
+              database: c.get('DB_NAME') || 'dunyafutbolu',
+              entities: [__dirname + '/**/*.entity{.ts,.js}'],
+              synchronize: true,
+            };
+      },
       inject: [ConfigService],
     }),
     AuthModule,
