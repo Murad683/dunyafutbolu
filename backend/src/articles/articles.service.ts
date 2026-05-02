@@ -14,9 +14,19 @@ export class ArticlesService {
   ) {}
 
   async findAll(categorySlug?: string, search?: string, page = 1, limit = 10) {
-    const qb = this.repo.createQueryBuilder('article').leftJoinAndSelect('article.category', 'category').orderBy('article.createdAt', 'DESC');
-    if (categorySlug) qb.andWhere('category.slug = :slug', { slug: categorySlug });
-    if (search) qb.andWhere('(article.title ILIKE :search OR article.excerpt ILIKE :search)', { search: `%${search}%` });
+    const qb = this.repo.createQueryBuilder('article')
+      .leftJoinAndSelect('article.category', 'category')
+      .leftJoin('category.parent', 'parent') // Join parent to check for parent slug
+      .orderBy('article.createdAt', 'DESC');
+
+    if (categorySlug) {
+      qb.andWhere('(category.slug = :slug OR parent.slug = :slug)', { slug: categorySlug });
+    }
+
+    if (search) {
+      qb.andWhere('(article.title ILIKE :search OR article.excerpt ILIKE :search)', { search: `%${search}%` });
+    }
+
     const total = await qb.getCount();
     const data = await qb.skip((page - 1) * limit).take(limit).getMany();
 
@@ -32,7 +42,10 @@ export class ArticlesService {
 
   async findOne(idOrSlug: string) {
     const isNum = !isNaN(+idOrSlug);
-    const article = await this.repo.findOne({ where: isNum ? { id: +idOrSlug } : { slug: idOrSlug } });
+    const article = await this.repo.findOne({ 
+      where: isNum ? { id: +idOrSlug } : { slug: idOrSlug },
+      relations: ['category', 'category.parent']
+    });
     if (!article) throw new NotFoundException('Article not found');
     
     // Increment views in background

@@ -18,11 +18,21 @@ export const Route = createFileRoute("/article/$slug")({
       
       let relatedArticles: ReturnType<typeof toNewsArticle>[] = [];
       try {
+        // Step 1: Try specific sub-category
         const relatedRes = await api.get<PaginatedResponse<Article>>('/articles', {
-          params: { categorySlug: res.data.category.slug, limit: 4 }
+          params: { categorySlug: res.data.category.slug, limit: 5 }
         });
         relatedArticles = relatedRes.data.data.filter(a => a.id !== res.data.id).slice(0, 4).map(toNewsArticle);
         
+        // Step 2: If empty, try parent category (if exists)
+        if (relatedArticles.length === 0 && res.data.category.parent) {
+          const parentRes = await api.get<PaginatedResponse<Article>>('/articles', {
+            params: { categorySlug: res.data.category.parent.slug, limit: 5 }
+          });
+          relatedArticles = parentRes.data.data.filter(a => a.id !== res.data.id).slice(0, 4).map(toNewsArticle);
+        }
+
+        // Step 3: Final fallback to latest news
         if (relatedArticles.length === 0) {
            const fallbackRes = await api.get<PaginatedResponse<Article>>('/articles', { params: { limit: 5 } });
            relatedArticles = fallbackRes.data.data.filter(a => a.id !== res.data.id).slice(0, 4).map(toNewsArticle);
