@@ -16,7 +16,6 @@ interface ArticleFormValues {
   categoryId: string;
   image: string;
   excerpt: string;
-  views: number;
   isFeatured: boolean;
 }
 
@@ -26,7 +25,6 @@ const defaultArticleValues: ArticleFormValues = {
   categoryId: '',
   image: '',
   excerpt: '',
-  views: 0,
   isFeatured: false,
 };
 
@@ -90,7 +88,6 @@ export default function ArticlesPage() {
       categoryId: String(editingArticle.category.id),
       image: editingArticle.image,
       excerpt: editingArticle.excerpt,
-      views: editingArticle.views,
       isFeatured: editingArticle.isFeatured,
     });
     setEditBody(paragraphsToHtml(editingArticle.body));
@@ -214,13 +211,6 @@ export default function ArticlesPage() {
                 })}
               </select>
             </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Views</label>
-              <input
-                type="number"
-                {...createForm.register('views', { valueAsNumber: true })}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
-              />
             </div>
           </div>
 
@@ -376,13 +366,6 @@ export default function ArticlesPage() {
                     })}
                   </select>
                 </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">Views</label>
-                  <input
-                    type="number"
-                    {...editForm.register('views', { valueAsNumber: true })}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
-                  />
                 </div>
               </div>
 

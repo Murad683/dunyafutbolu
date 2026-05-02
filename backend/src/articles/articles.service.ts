@@ -34,6 +34,14 @@ export class ArticlesService {
     const isNum = !isNaN(+idOrSlug);
     const article = await this.repo.findOne({ where: isNum ? { id: +idOrSlug } : { slug: idOrSlug } });
     if (!article) throw new NotFoundException('Article not found');
+    
+    // Increment views in background
+    this.repo.increment({ id: article.id }, 'views', 1).catch(err => {
+      console.error(`Failed to increment views for article ${article.id}:`, err);
+    });
+
+    // Return the object with locally incremented views for immediate UI feedback
+    article.views++;
     return article;
   }
 

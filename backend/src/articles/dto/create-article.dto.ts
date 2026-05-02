@@ -7,7 +7,6 @@ export class CreateArticleDto {
   @ApiProperty() @IsString() title: string;
   @ApiProperty() @IsString() excerpt: string;
   @ApiProperty({ type: [String] }) @IsArray() @IsString({ each: true }) body: string[];
-  @ApiPropertyOptional() @IsOptional() @IsNumber() views?: number;
   @ApiPropertyOptional() @IsOptional() @IsBoolean() isFeatured?: boolean;
   @ApiProperty({ description: 'Category ID' }) @IsNumber() categoryId: number;
 }

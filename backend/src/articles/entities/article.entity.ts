@@ -21,8 +21,8 @@ export class Article {
   @Column('text', { array: true, default: '{}' })
   body: string[];         // Array of paragraphs
 
-  @Column({ default: 0 })
-  views: number;          // changed to number
+  @Column({ default: 100 })
+  views: number;          // starts with 100
 
   @Column()
   readTime: string;
