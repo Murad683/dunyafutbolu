@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Navigate, useNavigate } from 'react-router-dom';
@@ -28,18 +29,24 @@ export default function LoginPage() {
     },
   });
 
+  const [loginError, setLoginError] = useState<string | null>(null);
+
   if (isAuthenticated) {
     return <Navigate to="/" replace />;
   }
 
   const onSubmit = async (data: FormData) => {
     try {
+      setLoginError(null);
       const response = await api.post<{ access_token: string; admin: { email: string } }>('/auth/login', data);
       login(response.data.access_token, response.data.admin.email);
       toast.success('Signed in');
       navigate('/');
-    } catch {
-      toast.error('Invalid credentials');
+    } catch (err: any) {
+      console.error('Login error:', err);
+      const message = err.response?.data?.message || 'Invalid email or password';
+      setLoginError(message);
+      toast.error(message);
     }
   };
 
@@ -69,6 +76,12 @@ export default function LoginPage() {
             />
             {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>}
           </div>
+
+          {loginError && (
+            <div className="rounded-lg bg-red-50 p-3 text-center text-xs font-medium text-red-600">
+              {loginError}
+            </div>
+          )}
 
           <button
             type="submit"

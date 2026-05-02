@@ -17,14 +17,23 @@ export class AuthService implements OnModuleInit {
 
   async onModuleInit() {
     const email = this.config.get<string>('ADMIN_EMAIL');
-    if (!email) return;
-    const exists = await this.adminRepo.findOne({ where: { email } });
-    if (!exists) {
-      const password = this.config.get<string>('ADMIN_PASSWORD');
-      const hashed = await bcrypt.hash(password || 'Admin@123', 12);
-      const admin = this.adminRepo.create({ email, password: hashed });
+    const password = this.config.get<string>('ADMIN_PASSWORD');
+    if (!email || !password) return;
+
+    // We ensure that the admin user in the DB always matches the ENV variables
+    let admin = await this.adminRepo.findOne({ where: {} });
+    const hashed = await bcrypt.hash(password, 12);
+
+    if (!admin) {
+      admin = this.adminRepo.create({ email, password: hashed });
       await this.adminRepo.save(admin);
-      console.log('Default admin created:', email);
+      console.log('Admin seeded from config:', email);
+    } else {
+      // Update existing admin to match current config
+      admin.email = email;
+      admin.password = hashed;
+      await this.adminRepo.save(admin);
+      console.log('Admin credentials synchronized with config');
     }
   }
 
