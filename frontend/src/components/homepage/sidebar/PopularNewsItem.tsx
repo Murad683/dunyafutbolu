@@ -3,6 +3,7 @@ import { Eye } from "lucide-react";
 import { clsx } from "clsx";
 import { Link } from "@tanstack/react-router";
 import type { PopularNewsItem as Item } from "@/data/mockData";
+import { getImageUrl } from "@/lib/api";
 
 function PopularNewsItemImpl({ item }: { item: Item }) {
   const rankColor =
@@ -29,7 +30,7 @@ function PopularNewsItemImpl({ item }: { item: Item }) {
       </span>
       <div className="w-16 h-14 rounded-[6px] flex-shrink-0 overflow-hidden">
         <img
-          src={item.image}
+          src={getImageUrl(item.image)}
           alt={item.title}
           loading="lazy"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

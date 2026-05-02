@@ -23,8 +23,8 @@ export default function LoginPage() {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      email: 'admin@dunya.az',
-      password: 'Admin@123',
+      email: '',
+      password: '',
     },
   });
 

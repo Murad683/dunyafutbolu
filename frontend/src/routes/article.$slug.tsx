@@ -4,7 +4,7 @@ import { Layout } from "@/components/layout/Layout";
 import { Badge } from "@/components/ui-news/Badge";
 import { SectionHeader } from "@/components/ui-news/SectionHeader";
 import { NewsCard } from "@/components/homepage/NewsCard";
-import { api } from "@/lib/api";
+import { api, getImageUrl } from "@/lib/api";
 import { toNewsArticle } from "@/lib/mappers";
 import type { Article, PaginatedResponse } from "@/types/api";
 
@@ -234,7 +234,7 @@ function ArticlePage() {
 
         <div className="rounded-card overflow-hidden mb-8 shadow-card">
           <img
-            src={article.image}
+            src={getImageUrl(article.image)}
             alt={article.title}
             className="w-full h-auto object-cover max-h-[460px]"
           />

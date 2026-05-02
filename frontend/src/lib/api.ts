@@ -5,6 +5,14 @@ export const api = axios.create({
   withCredentials: true,
 });
 
+export const getImageUrl = (path: string | null | undefined) => {
+  if (!path) return '';
+  if (path.startsWith('http')) return path;
+  
+  const baseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace('/api', '');
+  return `${baseUrl}/${path.startsWith('/') ? path.slice(1) : path}`;
+};
+
 // Request interceptor — log outgoing requests
 api.interceptors.request.use(
   (config) => {

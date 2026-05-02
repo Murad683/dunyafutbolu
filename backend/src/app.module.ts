@@ -9,6 +9,7 @@ import { VideosModule } from './videos/videos.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { BannersModule } from './banners/banners.module';
 import { NewsletterModule } from './newsletter/newsletter.module';
+import { SettingsModule } from './settings/settings.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { NewsletterModule } from './newsletter/newsletter.module';
     UploadsModule,
     BannersModule,
     NewsletterModule,
+    SettingsModule,
   ],
 })
 export class AppModule {}

@@ -9,15 +9,17 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { diskStorage } from 'multer';
-import { extname, join } from 'path';
-import { randomUUID } from 'crypto';
+import { memoryStorage } from 'multer';
+import { extname } from 'path';
+import { AzureStorageService } from './azure-storage.service';
 
 const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
 
 @ApiTags('Uploads')
 @Controller('uploads')
 export class UploadsController {
+  constructor(private readonly azureStorageService: AzureStorageService) {}
+
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post()
@@ -30,13 +32,7 @@ export class UploadsController {
   })
   @UseInterceptors(
     FileInterceptor('file', {
-      storage: diskStorage({
-        destination: join(process.cwd(), 'uploads'),
-        filename: (_req, file, cb) => {
-          const ext = extname(file.originalname).toLowerCase();
-          cb(null, `${randomUUID()}${ext}`);
-        },
-      }),
+      storage: memoryStorage(),
       limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
       fileFilter: (_req, file, cb) => {
         const ext = extname(file.originalname).toLowerCase();
@@ -48,8 +44,9 @@ export class UploadsController {
       },
     }),
   )
-  upload(@UploadedFile() file: Express.Multer.File) {
+  async upload(@UploadedFile() file: Express.Multer.File) {
     if (!file) throw new BadRequestException('No file provided');
-    return { url: `/uploads/${file.filename}` };
+    const url = await this.azureStorageService.uploadFile(file);
+    return { url };
   }
 }

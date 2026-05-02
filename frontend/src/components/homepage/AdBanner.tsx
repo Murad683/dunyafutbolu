@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Megaphone } from "lucide-react";
 import { clsx } from "clsx";
-import { api } from "@/lib/api";
+import { api, getImageUrl } from "@/lib/api";
 import type { Banner } from "@/types/api";
 
 interface AdBannerProps {
@@ -15,14 +15,29 @@ export function AdBanner({ variant = "horizontal" }: AdBannerProps) {
 
   useEffect(() => {
     let cancelled = false;
-    api.get<Banner[]>("/banners")
-      .then(res => {
-        if (!cancelled && res.data) {
-          const activeBanner = res.data.find(b => b.isActive && b.placement === placement);
-          if (activeBanner) setBanner(activeBanner);
+    
+    Promise.all([
+      api.get<Banner[]>("/banners"),
+      api.get<Record<string, string>>("/settings")
+    ]).then(([bannersRes, settingsRes]) => {
+      if (cancelled) return;
+      
+      const activeBanners = bannersRes.data.filter(b => b.isActive && b.placement === placement);
+      const isRotationEnabled = settingsRes.data?.ad_rotation === 'true';
+
+      if (activeBanners.length > 0) {
+        if (isRotationEnabled) {
+          // Random selection
+          const randomIndex = Math.floor(Math.random() * activeBanners.length);
+          setBanner(activeBanners[randomIndex]);
+        } else {
+          // Latest selection (highest ID)
+          const latest = [...activeBanners].sort((a, b) => b.id - a.id)[0];
+          setBanner(latest);
         }
-      })
-      .catch(err => console.error("Failed to fetch banners", err));
+      }
+    }).catch(err => console.error("Failed to fetch banners or settings", err));
+
     return () => { cancelled = true; };
   }, [placement]);
 
@@ -35,7 +50,7 @@ export function AdBanner({ variant = "horizontal" }: AdBannerProps) {
         className={clsx("block w-full overflow-hidden rounded-card", isSky ? "h-[350px]" : "h-[90px]")}
         title={banner.title}
       >
-        <img src={banner.imageUrl} alt={banner.title} className="w-full h-full object-cover" />
+        <img src={getImageUrl(banner.imageUrl)} alt={banner.title} className="w-full h-full object-cover" />
       </a>
     );
   }

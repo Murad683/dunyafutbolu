@@ -3,6 +3,7 @@ import { Calendar, Eye } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { clsx } from "clsx";
 import { Badge } from "@/components/ui-news/Badge";
+import { getImageUrl } from "@/lib/api";
 import type { NewsArticle } from "@/data/mockData";
 
 interface Props {
@@ -20,7 +21,7 @@ function NewsCardImpl({ article, featured = false }: Props) {
       <article>
         <div className={clsx("overflow-hidden", featured ? "h-[200px]" : "h-[140px]")}>
           <img
-            src={article.image}
+            src={getImageUrl(article.image)}
             alt={article.title}
             loading="lazy"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

@@ -7,7 +7,7 @@ import ReactQuill from 'react-quill';
 import { toast } from 'sonner';
 import 'react-quill/dist/quill.snow.css';
 import ImageUploadField from '../components/common/ImageUploadField';
-import api from '../lib/api';
+import api, { getImageUrl } from '../lib/api';
 import type { Article, Category } from '../lib/types';
 
 interface ArticleFormValues {
@@ -176,7 +176,7 @@ export default function ArticlesPage() {
 
       {showCreateForm && (
         <form onSubmit={createForm.handleSubmit(submitCreate)} className="space-y-4 rounded-xl border border-gray-200 bg-white p-6">
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
             <div className="xl:col-span-2">
               <label className="mb-1 block text-sm font-medium text-gray-700">Title</label>
               <input
@@ -259,8 +259,9 @@ export default function ArticlesPage() {
         </form>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-        <table className="w-full text-sm">
+      <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
+        <div className="inline-block min-w-full align-middle">
+          <table className="min-w-full divide-y divide-gray-200 text-sm">
           <thead className="border-b border-gray-200 bg-gray-50">
             <tr>
               <th className="px-4 py-3 text-left font-medium text-gray-600">Title</th>
@@ -282,7 +283,7 @@ export default function ArticlesPage() {
               <tr key={article.id} className="border-b border-gray-100 last:border-b-0">
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <img src={article.image} alt={article.title} className="h-10 w-14 rounded object-cover" />
+                    <img src={getImageUrl(article.image)} alt={article.title} className="h-10 w-14 rounded object-cover" />
                     <div className="min-w-0">
                       <p className="truncate font-medium text-gray-900">{article.title}</p>
                       <p className="truncate text-xs text-gray-400">{article.slug}</p>
@@ -319,7 +320,8 @@ export default function ArticlesPage() {
               </tr>
             )}
           </tbody>
-        </table>
+          </table>
+        </div>
       </div>
 
       <Dialog.Root open={!!editingArticle} onOpenChange={(open) => !open && setEditingArticle(null)}>
@@ -337,7 +339,7 @@ export default function ArticlesPage() {
             </div>
 
             <form onSubmit={editForm.handleSubmit(submitEdit)} className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
                 <div className="xl:col-span-2">
                   <label className="mb-1 block text-sm font-medium text-gray-700">Title</label>
                   <input

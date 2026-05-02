@@ -2,7 +2,7 @@ import { useId, useState } from 'react';
 import type { ChangeEvent } from 'react';
 import { ImagePlus, LoaderCircle, Upload } from 'lucide-react';
 import { toast } from 'sonner';
-import api from '../../lib/api';
+import api, { getImageUrl } from '../../lib/api';
 
 interface ImageUploadFieldProps {
   label: string;
@@ -49,7 +49,7 @@ export default function ImageUploadField({ label, value, onChange }: ImageUpload
           />
           {value ? (
             <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-              <img src={value} alt={label} className="h-40 w-full object-cover" />
+              <img src={getImageUrl(value)} alt={label} className="h-40 w-full object-cover" />
             </div>
           ) : (
             <div className="flex h-32 items-center justify-center rounded-lg border border-dashed border-gray-300 bg-white text-sm text-gray-400">

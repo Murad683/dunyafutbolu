@@ -1,4 +1,4 @@
-import { ArrowLeftRight, FileText, LayoutDashboard, LogOut, Tag, Trophy, Video, Image, Mail } from 'lucide-react';
+import { ArrowLeftRight, FileText, LayoutDashboard, LogOut, Tag, Trophy, Video, Image, Mail, X } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../lib/utils';
@@ -13,12 +13,16 @@ const navItems = [
   { to: '/newsletter', icon: Mail, label: 'Newsletter' },
 ];
 
-export default function Sidebar() {
+interface SidebarProps {
+  onClose?: () => void;
+}
+
+export default function Sidebar({ onClose }: SidebarProps) {
   const { email, logout } = useAuth();
 
   return (
-    <aside className="flex min-h-screen w-64 flex-col border-r border-gray-200 bg-white">
-      <div className="border-b border-gray-200 px-6 py-5">
+    <aside className="flex h-full w-64 flex-col border-r border-gray-200 bg-white">
+      <div className="flex items-center justify-between border-b border-gray-200 px-6 py-5">
         <div className="flex items-center gap-3">
           <div className="rounded-lg bg-brand p-2 text-white">
             <Trophy size={18} />
@@ -28,14 +32,21 @@ export default function Sidebar() {
             <p className="text-xs text-gray-500">Admin Panel</p>
           </div>
         </div>
+        <button 
+          onClick={onClose}
+          className="rounded-md p-1.5 text-gray-400 hover:bg-gray-100 lg:hidden"
+        >
+          <X size={20} />
+        </button>
       </div>
 
-      <nav className="flex-1 space-y-1 p-4">
+      <nav className="flex-1 space-y-1 overflow-y-auto p-4">
         {navItems.map(({ to, icon: Icon, label }) => (
           <NavLink
             key={to}
             to={to}
             end={to === '/'}
+            onClick={onClose}
             className={({ isActive }) =>
               cn(
                 'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',

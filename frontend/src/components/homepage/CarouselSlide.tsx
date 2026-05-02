@@ -2,6 +2,7 @@ import { memo } from "react";
 import { Eye } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Badge } from "@/components/ui-news/Badge";
+import { getImageUrl } from "@/lib/api";
 import type { CarouselSlide as Slide } from "@/data/mockData";
 
 interface Props {
@@ -20,7 +21,7 @@ function CarouselSlideImpl({ slide, isActive, isFirst }: Props) {
       aria-hidden={!isActive}
     >
       <img
-        src={slide.image}
+        src={getImageUrl(slide.image)}
         alt={slide.title}
         loading={isFirst ? "eager" : "lazy"}
         className="absolute inset-0 w-full h-full object-cover"

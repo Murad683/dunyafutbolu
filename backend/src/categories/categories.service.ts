@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, OnModuleInit, Logger } from '@nestjs/common';
+import { Injectable, NotFoundException, OnModuleInit, Logger, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from './entities/category.entity';
@@ -46,7 +46,14 @@ export class CategoriesService implements OnModuleInit {
   }
 
   async update(id: number, dto: UpdateCategoryDto) {
-    await this.findOne(id);
+    const category = await this.findOne(id);
+    
+    // Protect root categories from being renamed or slug-changed
+    const isRoot = ROOT_CATEGORIES.some(root => root.slug === category.slug);
+    if (isRoot && (dto.slug || dto.label)) {
+      throw new BadRequestException('Root categories (World/Local Football) cannot be renamed or have their slugs changed');
+    }
+
     const { parentId, ...rest } = dto;
     const updateData: any = { ...rest };
     if (parentId !== undefined) {
@@ -57,7 +64,14 @@ export class CategoriesService implements OnModuleInit {
   }
 
   async remove(id: number) {
-    await this.findOne(id);
+    const category = await this.findOne(id);
+    
+    // Protect root categories from deletion
+    const isRoot = ROOT_CATEGORIES.some(root => root.slug === category.slug);
+    if (isRoot) {
+      throw new BadRequestException('Root categories (World/Local Football) cannot be deleted');
+    }
+
     await this.repo.delete(id);
     return { message: 'Category deleted' };
   }

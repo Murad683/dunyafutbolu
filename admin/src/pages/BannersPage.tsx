@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as Dialog from '@radix-ui/react-dialog';
-import { Pencil, X } from 'lucide-react';
+import { Pencil, X, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import ImageUploadField from '../components/common/ImageUploadField';
-import api from '../lib/api';
+import api, { getImageUrl } from '../lib/api';
 import type { Banner, BannerPlacement } from '../lib/types';
 
 interface BannerFormValues {
@@ -51,6 +51,19 @@ export default function BannersPage() {
   const bannersQuery = useQuery({
     queryKey: ['banners'],
     queryFn: async () => (await api.get<Banner[]>('/banners')).data,
+  });
+
+  const settingsQuery = useQuery({
+    queryKey: ['settings'],
+    queryFn: async () => (await api.get<Record<string, string>>('/settings')).data,
+  });
+
+  const updateSettingMutation = useMutation({
+    mutationFn: (payload: { key: string; value: string }) => api.post('/settings', payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['settings'] });
+      toast.success('Setting updated');
+    },
   });
 
   const createMutation = useMutation({
@@ -101,12 +114,37 @@ export default function BannersPage() {
         </button>
       </div>
 
+      <div className="flex items-center justify-between rounded-xl border border-blue-100 bg-blue-50/50 p-4">
+        <div className="flex items-center gap-3">
+          <div className="rounded-lg bg-blue-500 p-2 text-white">
+            <RefreshCw size={20} className={settingsQuery.data?.ad_rotation === 'true' ? 'animate-spin' : ''} />
+          </div>
+          <div>
+            <h3 className="font-medium text-blue-900">Ad Rotation</h3>
+            <p className="text-xs text-blue-600">Cycle through multiple active ads for the same spot.</p>
+          </div>
+        </div>
+        <button
+          onClick={() => updateSettingMutation.mutate({
+            key: 'ad_rotation',
+            value: settingsQuery.data?.ad_rotation === 'true' ? 'false' : 'true'
+          })}
+          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${settingsQuery.data?.ad_rotation === 'true' ? 'bg-blue-600' : 'bg-gray-200'
+            }`}
+        >
+          <span
+            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${settingsQuery.data?.ad_rotation === 'true' ? 'translate-x-6' : 'translate-x-1'
+              }`}
+          />
+        </button>
+      </div>
+
       {showForm && (
         <form
           onSubmit={handleSubmit((values) => createMutation.mutate(values))}
           className="space-y-4 rounded-xl border border-gray-200 bg-white p-6"
         >
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700">Title</label>
               <input
@@ -155,71 +193,73 @@ export default function BannersPage() {
         </form>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-        <table className="w-full text-sm">
-          <thead className="border-b border-gray-200 bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-left font-medium text-gray-600">Banner</th>
-              <th className="px-4 py-3 text-left font-medium text-gray-600">Link</th>
-              <th className="px-4 py-3 text-left font-medium text-gray-600">Placement</th>
-              <th className="px-4 py-3 text-left font-medium text-gray-600">Status</th>
-              <th className="px-4 py-3" />
-            </tr>
-          </thead>
-          <tbody>
-            {bannersQuery.isLoading && (
+      <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
+        <div className="inline-block min-w-full align-middle">
+          <table className="min-w-full divide-y divide-gray-200 text-sm">
+            <thead className="border-b border-gray-200 bg-gray-50">
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-gray-400">
-                  Loading banners...
-                </td>
+                <th className="px-4 py-3 text-left font-medium text-gray-600">Banner</th>
+                <th className="px-4 py-3 text-left font-medium text-gray-600">Link</th>
+                <th className="px-4 py-3 text-left font-medium text-gray-600">Placement</th>
+                <th className="px-4 py-3 text-left font-medium text-gray-600">Status</th>
+                <th className="px-4 py-3" />
               </tr>
-            )}
-            {bannersQuery.data?.map((banner) => (
-              <tr key={banner.id} className="border-b border-gray-100 last:border-b-0">
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <img src={banner.imageUrl} alt={banner.title} className="h-10 w-24 rounded object-cover" />
-                    <span className="font-medium text-gray-900">{banner.title}</span>
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-gray-500">
-                  <a href={banner.linkUrl} target="_blank" rel="noreferrer" className="text-brand hover:underline">
-                    {banner.linkUrl}
-                  </a>
-                </td>
-                <td className="px-4 py-3 text-gray-500">{banner.placement}</td>
-                <td className="px-4 py-3">
-                  <span className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${banner.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
-                    {banner.isActive ? 'Active' : 'Inactive'}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-right">
-                  <div className="flex items-center justify-end gap-3">
-                    <button
-                      onClick={() => setEditingBanner(banner)}
-                      className="inline-flex items-center gap-1 text-xs font-medium text-brand transition-colors hover:text-brand-dark"
-                    >
-                      <Pencil size={14} /> Edit
-                    </button>
-                    <button
-                      onClick={() => deleteMutation.mutate(banner.id)}
-                      className="text-xs font-medium text-red-600 transition-colors hover:text-red-700"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-            {!bannersQuery.isLoading && !bannersQuery.data?.length && (
-              <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-gray-400">
-                  No banners created yet.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {bannersQuery.isLoading && (
+                <tr>
+                  <td colSpan={5} className="px-4 py-8 text-center text-gray-400">
+                    Loading banners...
+                  </td>
+                </tr>
+              )}
+              {bannersQuery.data?.map((banner) => (
+                <tr key={banner.id} className="border-b border-gray-100 last:border-b-0">
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <img src={getImageUrl(banner.imageUrl)} alt={banner.title} className="h-10 w-24 rounded object-cover" />
+                      <span className="font-medium text-gray-900">{banner.title}</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-gray-500">
+                    <a href={banner.linkUrl} target="_blank" rel="noreferrer" className="text-brand hover:underline">
+                      {banner.linkUrl}
+                    </a>
+                  </td>
+                  <td className="px-4 py-3 text-gray-500">{banner.placement}</td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${banner.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                      {banner.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <div className="flex items-center justify-end gap-3">
+                      <button
+                        onClick={() => setEditingBanner(banner)}
+                        className="inline-flex items-center gap-1 text-xs font-medium text-brand transition-colors hover:text-brand-dark"
+                      >
+                        <Pencil size={14} /> Edit
+                      </button>
+                      <button
+                        onClick={() => deleteMutation.mutate(banner.id)}
+                        className="text-xs font-medium text-red-600 transition-colors hover:text-red-700"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {!bannersQuery.isLoading && !bannersQuery.data?.length && (
+                <tr>
+                  <td colSpan={5} className="px-4 py-8 text-center text-gray-400">
+                    No banners created yet.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <Dialog.Root open={!!editingBanner} onOpenChange={(open) => !open && setEditingBanner(null)}>
@@ -233,7 +273,7 @@ export default function BannersPage() {
               </Dialog.Close>
             </div>
             <form onSubmit={editForm.handleSubmit((v) => updateMutation.mutate({ id: editingBanner!.id, values: v }))} className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
                 <div>
                   <label className="mb-1 block text-sm font-medium text-gray-700">Title</label>
                   <input
