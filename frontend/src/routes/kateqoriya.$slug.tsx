@@ -101,7 +101,7 @@ function CategoryPage() {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   </div>
-                  <div className="sm:w-[60%] p-5 flex flex-col justify-center">
+                  <div className="sm:w-[60%] p-5 flex flex-col justify-center items-start">
                     <Badge label={hero.category} variant="red" size="md" />
                     <h2 className="mt-2 mb-2 text-xl font-bold text-text-primary group-hover:text-brand-red transition-colors line-clamp-2">
                       {hero.title}

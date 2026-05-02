@@ -47,10 +47,10 @@ export function AdBanner({ variant = "horizontal" }: AdBannerProps) {
         href={banner.linkUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className={clsx("block w-full overflow-hidden rounded-card shadow-sm", isSky ? "h-[350px]" : "h-auto sm:h-[90px]")}
+        className={clsx("block w-full overflow-hidden rounded-card shadow-sm bg-surface-off/50", isSky ? "h-[350px]" : "h-auto sm:h-[90px] flex items-center justify-center")}
         title={banner.title}
       >
-        <img src={getImageUrl(banner.imageUrl)} alt={banner.title} className={clsx("w-full block", isSky ? "h-full object-cover" : "h-auto")} />
+        <img src={getImageUrl(banner.imageUrl)} alt={banner.title} className={clsx("block mx-auto", isSky ? "w-full h-full object-cover" : "max-w-full h-auto")} />
       </a>
     );
   }
