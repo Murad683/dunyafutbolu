@@ -22,10 +22,12 @@ export function HeroCarousel() {
   const [isPaused, setIsPaused] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const total = slides.length;
 
   useEffect(() => {
     let cancelled = false;
+    setIsLoading(true);
     api
       .get<PaginatedResponse<Article>>("/articles", { params: { limit: 50 } })
       .then((res) => {
@@ -42,6 +44,9 @@ export function HeroCarousel() {
       })
       .catch((err) => {
         console.error("[HeroCarousel] Failed to load featured articles", err);
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
       });
     return () => { cancelled = true; };
   }, []);
@@ -63,6 +68,12 @@ export function HeroCarousel() {
     }, CAROUSEL_INTERVAL_MS);
     return () => clearInterval(id);
   }, [isPaused, total]);
+
+  if (isLoading && total === 0) {
+    return (
+      <div className="relative overflow-hidden rounded-card bg-surface-border/30 animate-pulse h-[280px] md:h-[400px] lg:h-[460px]" />
+    );
+  }
 
   if (total === 0) return null;
 

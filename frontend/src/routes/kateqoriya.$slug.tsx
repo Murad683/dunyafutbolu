@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui-news/Badge";
 import { NewsCard } from "@/components/homepage/NewsCard";
 import { AdBanner } from "@/components/homepage/AdBanner";
 import { Sidebar } from "@/components/homepage/sidebar/Sidebar";
+import { NewsCardSkeleton } from "@/components/homepage/NewsCardSkeleton";
 import { api } from "@/lib/api";
 import { toNewsArticle } from "@/lib/mappers";
 import type { Article, Category, PaginatedResponse } from "@/types/api";
@@ -52,6 +53,24 @@ export const Route = createFileRoute("/kateqoriya/$slug")({
     };
   },
   component: CategoryPage,
+  pendingComponent: () => (
+    <Layout>
+      <div className="max-w-[1280px] mx-auto px-4 lg:px-6 py-6 animate-pulse">
+        <div className="h-20 bg-surface-off rounded-card mb-6" />
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_340px] gap-6 lg:gap-8 items-start">
+          <div className="min-w-0 flex flex-col gap-6">
+            <div className="h-[250px] bg-surface-border/30 rounded-card" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <NewsCardSkeleton key={i} />
+              ))}
+            </div>
+          </div>
+          <aside className="hidden lg:block w-[320px] h-[600px] bg-surface-border/20 rounded-card" />
+        </div>
+      </div>
+    </Layout>
+  )
 });
 
 function CategoryPage() {

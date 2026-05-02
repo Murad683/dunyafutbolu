@@ -7,6 +7,7 @@ import { NewsCard } from "@/components/homepage/NewsCard";
 import { Sidebar } from "@/components/homepage/sidebar/Sidebar";
 import { AdBanner } from "@/components/homepage/AdBanner";
 import { SIDEBAR_TOP_OFFSET_PX } from "@/config/constants";
+import { NewsCardSkeleton } from "@/components/homepage/NewsCardSkeleton";
 import { api } from "@/lib/api";
 import { toNewsArticle } from "@/lib/mappers";
 import type { Article, Category, PaginatedResponse } from "@/types/api";
@@ -151,8 +152,10 @@ function XeberlerPage() {
             </p>
 
             {isLoading ? (
-              <div className="py-20 text-center">
-                <div className="inline-block w-8 h-8 border-4 border-brand-red border-t-transparent rounded-full animate-spin" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {Array.from({ length: 9 }).map((_, i) => (
+                  <NewsCardSkeleton key={i} />
+                ))}
               </div>
             ) : items.length === 0 ? (
               <div className="py-16 text-center text-text-muted">Axtarışa uyğun xəbər tapılmadı.</div>

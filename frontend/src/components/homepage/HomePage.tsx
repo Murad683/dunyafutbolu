@@ -7,6 +7,7 @@ import { NewsGrid } from "./NewsGrid";
 import { InfiniteScrollTrigger } from "./InfiniteScrollTrigger";
 import { CategoryFilters } from "./CategoryFilters";
 import { Sidebar } from "./sidebar/Sidebar";
+import { NewsCardSkeleton } from "./NewsCardSkeleton";
 
 export function HomePage() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -20,7 +21,17 @@ export function HomePage() {
           <AdBanner variant="horizontal" />
           <HeroCarousel />
           <CategoryFilters active={activeCategory} onChange={setActiveCategory} />
-          <NewsGrid articles={items} categoryFilter={activeCategory} />
+          
+          {isLoading && items.length === 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <NewsCardSkeleton key={i} />
+              ))}
+            </div>
+          ) : (
+            <NewsGrid articles={items} categoryFilter={activeCategory} />
+          )}
+
           {!activeCategory && hasMore && (
             <InfiniteScrollTrigger triggerRef={triggerRef} isLoading={isLoading} />
           )}
