@@ -38,6 +38,10 @@ export class AzureStorageService implements OnModuleInit {
         // AZURE UPLOAD
         const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
         const containerClient = blobServiceClient.getContainerClient(this.containerName);
+        
+        // Ensure container exists
+        await containerClient.createIfNotExists({ access: 'blob' });
+
         const blockBlobClient = containerClient.getBlockBlobClient(fileName);
 
         await blockBlobClient.uploadData(compressedBuffer, {
