@@ -3,7 +3,7 @@ import { Eye } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Badge } from "@/components/ui-news/Badge";
 import { getImageUrl } from "@/lib/api";
-import type { CarouselSlide as Slide } from "@/data/mockData";
+import type { CarouselSlide as Slide } from "@/types/news";
 
 interface Props {
   slide: Slide;

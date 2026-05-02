@@ -4,14 +4,27 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRightLeft, ArrowDownToLine, ArrowUpFromLine, RotateCcw, Calendar, Filter, Shield } from "lucide-react";
 import { clsx } from "clsx";
 import { Layout } from "@/components/layout/Layout";
-import { MOCK_TRANSFERS } from "@/data/mockData";
-import type { Transfer } from "@/data/mockData";
 import { Sidebar } from "@/components/homepage/sidebar/Sidebar";
 import { AdBanner } from "@/components/homepage/AdBanner";
 import { SIDEBAR_TOP_OFFSET_PX } from "@/config/constants";
 import { api } from "@/lib/api";
 import { toTransfer } from "@/lib/mappers";
 import type { ApiTransfer } from "@/types/api";
+
+export interface Transfer {
+  id: number;
+  playerName: string;
+  image: string;
+  fromClub: string;
+  fromClubLogo?: string;
+  toClub: string;
+  toClubLogo?: string;
+  fee: string;
+  type: "giriş" | "çıxış" | "icarə";
+  date: string;
+  league: string;
+}
+
 
 export const Route = createFileRoute("/transferler")({
   head: () => ({
@@ -67,7 +80,7 @@ function getTypeBadgeClass(type: Transfer["type"]) {
 function TransferlerPage() {
   const [typeFilter, setTypeFilter] = useState("all");
   const [leagueFilter, setLeagueFilter] = useState("Hamısı");
-  const [transfers, setTransfers] = useState<Transfer[]>(MOCK_TRANSFERS);
+  const [transfers, setTransfers] = useState<Transfer[]>([]);
 
   useEffect(() => {
     let cancelled = false;

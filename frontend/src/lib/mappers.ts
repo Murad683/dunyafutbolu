@@ -1,5 +1,5 @@
 import type { Article, ApiTransfer, ApiVideo } from '@/types/api';
-import type { CarouselSlide, NewsArticle, PopularNewsItem, Transfer, MockVideo } from '@/data/mockData';
+import type { CarouselSlide, NewsArticle, PopularItem, Transfer, VideoItem } from '@/types/news';
 
 /**
  * Format an ISO date string to a human-readable Azerbaijani format.
@@ -67,7 +67,7 @@ export function toNewsArticle(article: Article): NewsArticle {
 /**
  * Map a backend Article to the frontend PopularNewsItem shape.
  */
-export function toPopularNewsItem(article: Article, rank: number): PopularNewsItem {
+export function toPopularNewsItem(article: Article, rank: number): PopularItem {
   return {
     id: article.id,
     rank,
@@ -101,7 +101,7 @@ export function toTransfer(t: ApiTransfer): Transfer {
 /**
  * Map a backend Video to the frontend MockVideo shape.
  */
-export function toVideo(v: ApiVideo): MockVideo {
+export function toVideo(v: ApiVideo): VideoItem {
   return {
     id: v.id.toString(),
     youtubeId: v.youtubeId,

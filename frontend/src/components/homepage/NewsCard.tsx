@@ -4,7 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { clsx } from "clsx";
 import { Badge } from "@/components/ui-news/Badge";
 import { getImageUrl } from "@/lib/api";
-import type { NewsArticle } from "@/data/mockData";
+import type { NewsArticle } from "@/types/news";
 
 interface Props {
   article: NewsArticle;

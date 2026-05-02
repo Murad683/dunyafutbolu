@@ -1,15 +1,23 @@
 import { useEffect, useState } from "react";
 import { Flame } from "lucide-react";
 import { SectionHeader } from "@/components/ui-news/SectionHeader";
-import { popularNews as mockPopular } from "@/data/mockData";
-import type { PopularNewsItem as PopularItem } from "@/data/mockData";
 import { api } from "@/lib/api";
 import { toPopularNewsItem } from "@/lib/mappers";
 import type { Article, PaginatedResponse } from "@/types/api";
 import { PopularNewsItem } from "./PopularNewsItem";
 
+export interface PopularItem {
+  id: number;
+  rank: number;
+  category: string;
+  title: string;
+  slug: string;
+  image: string;
+}
+
+
 export function PopularNews() {
-  const [items, setItems] = useState<PopularItem[]>(mockPopular);
+  const [items, setItems] = useState<PopularItem[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -25,11 +33,14 @@ export function PopularNews() {
           setItems(top);
         }
       })
-      .catch(() => {
-        console.warn("[PopularNews] API unavailable, using mock data");
+      .catch((err) => {
+        console.error("[PopularNews] Failed to load popular news", err);
       });
     return () => { cancelled = true; };
   }, []);
+
+  if (items.length === 0) return null;
+
 
   return (
     <div className="bg-surface-off border border-surface-border rounded-card p-4">

@@ -3,8 +3,15 @@ import { useState, useMemo, useEffect } from "react";
 import { Play, Eye, Calendar, Film } from "lucide-react";
 import { clsx } from "clsx";
 import { Layout } from "@/components/layout/Layout";
-import { MOCK_VIDEOS } from "@/data/mockData";
-import type { MockVideo } from "@/data/mockData";
+export interface VideoItem {
+  id: number;
+  youtubeId: string;
+  title: string;
+  category: string;
+  date: string;
+  views: string;
+}
+
 import { api } from "@/lib/api";
 import { toVideo } from "@/lib/mappers";
 import type { ApiVideo } from "@/types/api";
@@ -24,7 +31,7 @@ const CATS = ["Hamısı", "Qollar", "Analiz", "Mülakat", "Reklamlar"];
 function VideoPage() {
   const [cat, setCat] = useState("Hamısı");
   const [active, setActive] = useState<string | null>(null);
-  const [videos, setVideos] = useState<MockVideo[]>(MOCK_VIDEOS);
+  const [videos, setVideos] = useState<VideoItem[]>([]);
 
   useEffect(() => {
     let cancelled = false;

@@ -1,15 +1,23 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { CAROUSEL_INTERVAL_MS } from "@/config/constants";
-import { carouselSlides as mockSlides } from "@/data/mockData";
-import type { CarouselSlide as SlideType } from "@/data/mockData";
 import { api } from "@/lib/api";
 import { toCarouselSlide } from "@/lib/mappers";
 import type { Article, PaginatedResponse } from "@/types/api";
 import { CarouselSlide } from "./CarouselSlide";
 import { CarouselControls } from "./CarouselControls";
 
+// Define the slide type locally or import from types if available
+export interface SlideType {
+  id: number;
+  image: string;
+  title: string;
+  category: string;
+  slug: string;
+}
+
+
 export function HeroCarousel() {
-  const [slides, setSlides] = useState<SlideType[]>(mockSlides);
+  const [slides, setSlides] = useState<SlideType[]>([]);
   const [current, setCurrent] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -32,22 +40,31 @@ export function HeroCarousel() {
           }
         }
       })
-      .catch(() => {
-        console.warn("[HeroCarousel] API unavailable, using mock slides");
+      .catch((err) => {
+        console.error("[HeroCarousel] Failed to load featured articles", err);
       });
     return () => { cancelled = true; };
   }, []);
 
-  const next = useCallback(() => setCurrent((c) => (c + 1) % total), [total]);
-  const prev = useCallback(() => setCurrent((c) => (c - 1 + total) % total), [total]);
+  const next = useCallback(() => {
+    if (total === 0) return;
+    setCurrent((c) => (c + 1) % total);
+  }, [total]);
+
+  const prev = useCallback(() => {
+    if (total === 0) return;
+    setCurrent((c) => (c - 1 + total) % total);
+  }, [total]);
 
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || total === 0) return;
     const id = setInterval(() => {
       setCurrent((c) => (c + 1) % total);
     }, CAROUSEL_INTERVAL_MS);
     return () => clearInterval(id);
   }, [isPaused, total]);
+
+  if (total === 0) return null;
 
   const minSwipeDistance = 50;
 

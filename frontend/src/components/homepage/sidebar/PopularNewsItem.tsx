@@ -2,7 +2,7 @@ import { memo } from "react";
 import { Eye } from "lucide-react";
 import { clsx } from "clsx";
 import { Link } from "@tanstack/react-router";
-import type { PopularNewsItem as Item } from "@/data/mockData";
+import type { PopularItem as Item } from "@/types/news";
 import { getImageUrl } from "@/lib/api";
 
 function PopularNewsItemImpl({ item }: { item: Item }) {

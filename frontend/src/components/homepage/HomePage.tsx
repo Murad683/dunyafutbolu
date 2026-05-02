@@ -1,7 +1,6 @@
-import { useMemo, useState } from "react";
-import { newsArticles } from "@/data/mockData";
+import { useState } from "react";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
-import { INITIAL_ITEMS, SIDEBAR_TOP_OFFSET_PX } from "@/config/constants";
+import { SIDEBAR_TOP_OFFSET_PX } from "@/config/constants";
 import { AdBanner } from "./AdBanner";
 import { HeroCarousel } from "./HeroCarousel";
 import { NewsGrid } from "./NewsGrid";
@@ -11,8 +10,7 @@ import { Sidebar } from "./sidebar/Sidebar";
 
 export function HomePage() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const initial = useMemo(() => newsArticles.slice(0, INITIAL_ITEMS), []);
-  const { items, isLoading, hasMore, triggerRef } = useInfiniteScroll(initial, newsArticles);
+  const { items, isLoading, hasMore, triggerRef } = useInfiniteScroll();
 
   return (
     <div className="max-w-[1280px] mx-auto px-4 lg:px-6 py-6">

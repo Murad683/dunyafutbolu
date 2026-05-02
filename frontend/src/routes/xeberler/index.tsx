@@ -1,13 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Newspaper, Search } from "lucide-react";
 import { clsx } from "clsx";
 import { Layout } from "@/components/layout/Layout";
-import { newsArticles } from "@/data/mockData";
 import { NewsCard } from "@/components/homepage/NewsCard";
 import { Sidebar } from "@/components/homepage/sidebar/Sidebar";
 import { AdBanner } from "@/components/homepage/AdBanner";
 import { SIDEBAR_TOP_OFFSET_PX } from "@/config/constants";
+import { api } from "@/lib/api";
+import { toNewsArticle } from "@/lib/mappers";
+import type { Article, Category, PaginatedResponse } from "@/types/api";
+import type { NewsArticle } from "@/types/news";
 import {
   Pagination,
   PaginationContent,
@@ -30,35 +33,60 @@ export const Route = createFileRoute("/xeberler/")({
 const PER_PAGE = 12;
 
 function XeberlerPage() {
-  const [cat, setCat] = useState("Hamısı");
+  const [catSlug, setCatSlug] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [items, setItems] = useState<NewsArticle[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Unique categories from articles
-  const uniqueCats = useMemo(() => {
-    const set = new Set(newsArticles.map((a) => a.category));
-    return ["Hamısı", ...Array.from(set).sort()];
+  useEffect(() => {
+    api.get<Category[]>("/categories").then((res) => {
+      setCategories(res.data);
+    });
   }, []);
 
-  const filtered = useMemo(() => {
-    let list = newsArticles;
-    if (cat !== "Hamısı") list = list.filter((a) => a.category === cat);
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter((a) => a.title.toLowerCase().includes(q));
-    }
-    return list;
-  }, [cat, search]);
+  useEffect(() => {
+    let cancelled = false;
+    setIsLoading(true);
+    
+    api
+      .get<PaginatedResponse<Article>>("/articles", {
+        params: {
+          page,
+          limit: PER_PAGE,
+          categorySlug: catSlug === "all" ? undefined : catSlug,
+          search: search.trim() || undefined,
+        },
+      })
+      .then((res) => {
+        if (!cancelled) {
+          setItems(res.data.data.map(toNewsArticle));
+          setTotalItems(res.data.meta.total);
+          setTotalPages(res.data.meta.last_page);
+        }
+      })
+      .catch((err) => {
+        console.error("[XeberlerPage] Failed to fetch articles", err);
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
 
-  // Reset page on filter change
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
-  const safePage = Math.min(page, totalPages);
-  const paged = filtered.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE);
+    return () => { cancelled = true; };
+  }, [page, catSlug, search]);
 
-  const handleCat = (c: string) => {
-    setCat(c);
+  const handleCat = (slug: string) => {
+    setCatSlug(slug);
     setPage(1);
   };
+
+  const activeCategoryLabel = useMemo(() => {
+    if (catSlug === "all") return "Hamısı";
+    return categories.find(c => c.slug === catSlug)?.name || catSlug;
+  }, [catSlug, categories]);
 
   return (
     <Layout>
@@ -71,7 +99,7 @@ function XeberlerPage() {
             </div>
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-white">Bütün Xəbərlər</h1>
-              <p className="text-white/60 text-sm mt-0.5">{newsArticles.length} xəbər mövcuddur</p>
+              <p className="text-white/60 text-sm mt-0.5">{totalItems} xəbər mövcuddur</p>
             </div>
           </div>
         </div>
@@ -89,9 +117,25 @@ function XeberlerPage() {
             />
           </div>
           <div className="flex flex-wrap gap-2">
-            {uniqueCats.map((c) => (
-              <button key={c} onClick={() => handleCat(c)} className={clsx("px-3.5 py-1.5 rounded-pill text-xs font-medium transition-colors", cat === c ? "bg-brand-red text-white shadow-sm" : "bg-surface-light text-text-secondary hover:bg-surface-border")}>
-                {c}
+            <button
+              onClick={() => handleCat("all")}
+              className={clsx(
+                "px-3.5 py-1.5 rounded-pill text-xs font-medium transition-colors",
+                catSlug === "all" ? "bg-brand-red text-white shadow-sm" : "bg-surface-light text-text-secondary hover:bg-surface-border"
+              )}
+            >
+              Hamısı
+            </button>
+            {categories.filter(c => !c.parent).map((c) => (
+              <button
+                key={c.id}
+                onClick={() => handleCat(c.slug)}
+                className={clsx(
+                  "px-3.5 py-1.5 rounded-pill text-xs font-medium transition-colors",
+                  catSlug === c.slug ? "bg-brand-red text-white shadow-sm" : "bg-surface-light text-text-secondary hover:bg-surface-border"
+                )}
+              >
+                {c.name}
               </button>
             ))}
           </div>
@@ -103,14 +147,18 @@ function XeberlerPage() {
 
             {/* Results info */}
             <p className="text-sm text-text-muted">
-              {filtered.length} nəticə tapıldı{cat !== "Hamısı" ? ` — ${cat}` : ""}
+              {totalItems} nəticə tapıldı{catSlug !== "all" ? ` — ${activeCategoryLabel}` : ""}
             </p>
 
-            {paged.length === 0 ? (
+            {isLoading ? (
+              <div className="py-20 text-center">
+                <div className="inline-block w-8 h-8 border-4 border-brand-red border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : items.length === 0 ? (
               <div className="py-16 text-center text-text-muted">Axtarışa uyğun xəbər tapılmadı.</div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {paged.map((a) => (
+                {items.map((a) => (
                   <NewsCard key={a.id} article={a} />
                 ))}
               </div>
@@ -121,19 +169,19 @@ function XeberlerPage() {
                 <Pagination>
                   <PaginationContent>
                     <PaginationItem>
-                      <PaginationPrevious onClick={() => safePage > 1 && setPage(safePage - 1)} className={clsx("cursor-pointer select-none", safePage <= 1 && "pointer-events-none opacity-40")} aria-label="Əvvəlki səhifə">Əvvəlki</PaginationPrevious>
+                      <PaginationPrevious onClick={() => page > 1 && setPage(page - 1)} className={clsx("cursor-pointer select-none", page <= 1 && "pointer-events-none opacity-40")} aria-label="Əvvəlki səhifə">Əvvəlki</PaginationPrevious>
                     </PaginationItem>
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                       <PaginationItem key={p}>
-                        <PaginationLink isActive={p === safePage} onClick={() => setPage(p)} className="cursor-pointer select-none">{p}</PaginationLink>
+                        <PaginationLink isActive={p === page} onClick={() => setPage(p)} className="cursor-pointer select-none">{p}</PaginationLink>
                       </PaginationItem>
                     ))}
                     <PaginationItem>
-                      <PaginationNext onClick={() => safePage < totalPages && setPage(safePage + 1)} className={clsx("cursor-pointer select-none", safePage >= totalPages && "pointer-events-none opacity-40")} aria-label="Növbəti səhifə">Növbəti</PaginationNext>
+                      <PaginationNext onClick={() => page < totalPages && setPage(page + 1)} className={clsx("cursor-pointer select-none", page >= totalPages && "pointer-events-none opacity-40")} aria-label="Növbəti səhifə">Növbəti</PaginationNext>
                     </PaginationItem>
                   </PaginationContent>
                 </Pagination>
-                <span className="text-meta text-text-muted">Səhifə {safePage} / {totalPages}</span>
+                <span className="text-meta text-text-muted">Səhifə {page} / {totalPages}</span>
               </div>
             )}
           </div>
@@ -146,3 +194,4 @@ function XeberlerPage() {
     </Layout>
   );
 }
+
