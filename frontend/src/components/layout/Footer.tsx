@@ -177,7 +177,7 @@ export function Footer() {
       <div className="border-t border-white/5">
         <div className="max-w-[1280px] mx-auto px-4 lg:px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-gray-500">
-            © {new Date().getFullYear()} Dünya Futbolu. Bütün hüquqlar qorunur.
+            © {new Date().getFullYear()} Dünya Futbolu. Bütün hüquqlar qorunur. | Bakı Texnoloji Layihələri tərəfindən hazırlanmışdır.
           </p>
           <div className="flex items-center gap-4 text-xs text-gray-500">
             <span>Azərbaycanın futbol portalı</span>
