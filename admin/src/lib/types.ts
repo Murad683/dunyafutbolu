@@ -1,4 +1,4 @@
-export type TransferType = 'giriş' | 'çıxış' | 'icarə';
+export type TransferType = 'Daimi Transfer' | 'İcarə' | 'Mübadilə' | 'Digər';
 
 export type BannerPlacement = 'TOP_728X90' | 'SIDEBAR_300X350';
 

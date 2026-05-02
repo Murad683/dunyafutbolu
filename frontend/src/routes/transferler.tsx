@@ -20,7 +20,7 @@ export interface Transfer {
   toClub: string;
   toClubLogo?: string;
   fee: string;
-  type: "giriş" | "çıxış" | "icarə";
+  type: "Daimi Transfer" | "İcarə" | "Mübadilə" | "Digər";
   date: string;
   league: string;
 }
@@ -41,9 +41,10 @@ export const Route = createFileRoute("/transferler")({
 
 const TYPE_FILTERS: { label: string; value: string }[] = [
   { label: "Hamısı", value: "all" },
-  { label: "Giriş", value: "giriş" },
-  { label: "Çıxış", value: "çıxış" },
-  { label: "İcarə", value: "icarə" },
+  { label: "Daimi", value: "Daimi Transfer" },
+  { label: "İcarə", value: "İcarə" },
+  { label: "Mübadilə", value: "Mübadilə" },
+  { label: "Digər", value: "Digər" },
 ];
 
 const LEAGUE_FILTERS = [
@@ -57,23 +58,27 @@ const LEAGUE_FILTERS = [
 
 function getTypeIcon(type: Transfer["type"]) {
   switch (type) {
-    case "giriş":
+    case "Daimi Transfer":
       return <ArrowDownToLine size={14} className="text-green-600" aria-hidden />;
-    case "çıxış":
-      return <ArrowUpFromLine size={14} className="text-red-500" aria-hidden />;
-    case "icarə":
+    case "İcarə":
       return <RotateCcw size={14} className="text-amber-500" aria-hidden />;
+    case "Mübadilə":
+      return <ArrowRightLeft size={14} className="text-blue-500" aria-hidden />;
+    case "Digər":
+      return <RotateCcw size={14} className="text-gray-500" aria-hidden />;
   }
 }
 
 function getTypeBadgeClass(type: Transfer["type"]) {
   switch (type) {
-    case "giriş":
+    case "Daimi Transfer":
       return "bg-green-50 text-green-700 border-green-200";
-    case "çıxış":
-      return "bg-red-50 text-red-700 border-red-200";
-    case "icarə":
+    case "İcarə":
       return "bg-amber-50 text-amber-700 border-amber-200";
+    case "Mübadilə":
+      return "bg-blue-50 text-blue-700 border-blue-200";
+    case "Digər":
+      return "bg-gray-50 text-gray-700 border-gray-200";
   }
 }
 

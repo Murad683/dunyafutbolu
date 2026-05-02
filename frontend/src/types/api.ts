@@ -39,7 +39,7 @@ export interface ApiTransfer {
   fee: string;
   league: string;
   image: string;
-  type: 'giriş' | 'çıxış' | 'icarə';
+  type: 'Daimi Transfer' | 'İcarə' | 'Mübadilə' | 'Digər';
   date: string;
 }
 

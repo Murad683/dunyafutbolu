@@ -36,7 +36,7 @@ export class CreateTransferDto {
   @IsString()
   image: string;
 
-  @ApiProperty({ enum: ['giriş', 'çıxış', 'icarə'] })
-  @IsIn(['giriş', 'çıxış', 'icarə'])
-  type: 'giriş' | 'çıxış' | 'icarə';
+  @ApiProperty({ enum: ['Daimi Transfer', 'İcarə', 'Mübadilə', 'Digər'] })
+  @IsIn(['Daimi Transfer', 'İcarə', 'Mübadilə', 'Digər'])
+  type: 'Daimi Transfer' | 'İcarə' | 'Mübadilə' | 'Digər';
 }

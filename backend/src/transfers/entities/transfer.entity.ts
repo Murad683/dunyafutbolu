@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 
-export type TransferType = 'giriş' | 'çıxış' | 'icarə';
+export type TransferType = 'Daimi Transfer' | 'İcarə' | 'Mübadilə' | 'Digər';
 
 @Entity('transfers')
 export class Transfer {
@@ -31,7 +31,7 @@ export class Transfer {
   @Column()
   image: string;
 
-  @Column({ type: 'enum', enum: ['giriş', 'çıxış', 'icarə'] })
+  @Column({ type: 'enum', enum: ['Daimi Transfer', 'İcarə', 'Mübadilə', 'Digər'] })
   type: TransferType;
 
   @CreateDateColumn()

@@ -45,7 +45,7 @@ export interface Transfer {
   toClub: string;
   toClubLogo?: string;
   fee: string;
-  type: "giriş" | "çıxış" | "icarə";
+  type: "Daimi Transfer" | "İcarə" | "Mübadilə" | "Digər";
   date: string;
   league: string;
 }

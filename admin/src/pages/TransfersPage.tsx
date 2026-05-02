@@ -20,7 +20,7 @@ interface TransferFormValues {
   type: TransferType;
 }
 
-const transferTypes: TransferType[] = ['giriş', 'çıxış', 'icarə'];
+const transferTypes: TransferType[] = ['Daimi Transfer', 'İcarə', 'Mübadilə', 'Digər'];
 
 export default function TransfersPage() {
   const queryClient = useQueryClient();
@@ -44,7 +44,7 @@ export default function TransfersPage() {
       fee: 'N/A',
       league: '',
       image: '',
-      type: 'giriş',
+      type: 'Daimi Transfer',
     },
   });
 
@@ -58,7 +58,7 @@ export default function TransfersPage() {
       fee: 'N/A',
       league: '',
       image: '',
-      type: 'giriş',
+      type: 'Daimi Transfer',
     },
   });
 
@@ -215,8 +215,9 @@ export default function TransfersPage() {
         </form>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-        <table className="w-full text-sm">
+      <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[800px]">
           <thead className="border-b border-gray-200 bg-gray-50">
             <tr>
               <th className="px-4 py-3 text-left font-medium text-gray-600">Player</th>
@@ -277,6 +278,7 @@ export default function TransfersPage() {
           </tbody>
         </table>
       </div>
+    </div>
 
       <Dialog.Root open={!!editingTransfer} onOpenChange={(open) => !open && setEditingTransfer(null)}>
         <Dialog.Portal>
