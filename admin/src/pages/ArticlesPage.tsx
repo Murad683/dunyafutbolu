@@ -211,7 +211,6 @@ export default function ArticlesPage() {
                 })}
               </select>
             </div>
-            </div>
           </div>
 
           <div>
@@ -365,7 +364,6 @@ export default function ArticlesPage() {
                       return <option key={parentCat.id} value={parentCat.id}>{parentCat.label}</option>;
                     })}
                   </select>
-                </div>
                 </div>
               </div>
 
