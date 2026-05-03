@@ -7,7 +7,7 @@ export interface VideoItem {
   id: number;
   youtubeId: string;
   title: string;
-  category: { id: number; label: string; slug: string };
+  category: string;
   date: string;
   views: string;
 }
@@ -26,18 +26,15 @@ export const Route = createFileRoute("/video")({
   component: VideoPage,
 });
 
-// Static categories are removed in favor of dynamic categories with type 'video'
+const CATS = ["Hamısı", "Qollar", "Analiz", "Mülakat", "Reklamlar"];
 
 function VideoPage() {
-  const [cat, setCat] = useState("all");
+  const [cat, setCat] = useState("Hamısı");
   const [active, setActive] = useState<string | null>(null);
   const [videos, setVideos] = useState<VideoItem[]>([]);
-  const [categories, setCategories] = useState<{ id: number; label: string }[]>([]);
 
   useEffect(() => {
     let cancelled = false;
-    
-    // Fetch videos
     api
       .get<ApiVideo[]>("/videos")
       .then((res) => {
@@ -46,22 +43,12 @@ function VideoPage() {
         }
       })
       .catch(() => {
-        console.warn("[VideoPage] API unavailable");
+        console.warn("[VideoPage] API unavailable, using mock data");
       });
-
-    // Fetch video categories
-    api.get<any[]>("/categories")
-      .then(res => {
-        if (!cancelled) {
-          const videoCats = res.data.filter(c => c.type === 'video');
-          setCategories(videoCats.map(c => ({ id: c.id, label: c.label })));
-        }
-      });
-
     return () => { cancelled = true; };
   }, []);
 
-  const list = useMemo(() => (cat === "all" ? videos : videos.filter((v) => String(v.category?.id) === cat)), [cat, videos]);
+  const list = useMemo(() => (cat === "Hamısı" ? videos : videos.filter((v) => v.category === cat)), [cat, videos]);
 
   return (
     <Layout>
@@ -79,15 +66,9 @@ function VideoPage() {
         </div>
 
         <div className="flex flex-wrap gap-2 mb-6">
-          <button 
-            onClick={() => setCat("all")} 
-            className={clsx("px-4 py-2 rounded-pill text-sm font-medium transition-colors", cat === "all" ? "bg-brand-red text-white shadow-sm" : "bg-surface-light text-text-secondary hover:bg-surface-border")}
-          >
-            Hamısı
-          </button>
-          {categories.map((c) => (
-            <button key={c.id} onClick={() => setCat(String(c.id))} className={clsx("px-4 py-2 rounded-pill text-sm font-medium transition-colors", cat === String(c.id) ? "bg-brand-red text-white shadow-sm" : "bg-surface-light text-text-secondary hover:bg-surface-border")}>
-              {c.label}
+          {CATS.map((c) => (
+            <button key={c} onClick={() => setCat(c)} className={clsx("px-4 py-2 rounded-pill text-sm font-medium transition-colors", cat === c ? "bg-brand-red text-white shadow-sm" : "bg-surface-light text-text-secondary hover:bg-surface-border")}>
+              {c}
             </button>
           ))}
         </div>
@@ -117,7 +98,7 @@ function VideoPage() {
                       <Play size={20} className="text-white ml-0.5" fill="white" aria-hidden />
                     </div>
                   </div>
-                  <span className="absolute top-2 left-2 px-2 py-0.5 rounded-badge bg-black/70 text-[0.6rem] font-bold uppercase tracking-wider text-white">{v.category?.label}</span>
+                  <span className="absolute top-2 left-2 px-2 py-0.5 rounded-badge bg-black/70 text-[0.6rem] font-bold uppercase tracking-wider text-white">{v.category}</span>
                 </div>
                 <div className="p-3">
                   <h3 className="text-card-md text-text-primary group-hover:text-brand-red transition-colors line-clamp-2 mb-2">{v.title}</h3>

@@ -196,7 +196,7 @@ export default function ArticlesPage() {
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
               >
                 <option value="">Select category</option>
-                {categories.filter((c: any) => !c.parent && c.type === 'article').map((parentCat: any) => {
+                {categories.filter((c: any) => !c.parent).map((parentCat: any) => {
                   const children = categories.filter((c: any) => c.parent?.id === parentCat.id);
                   if (children.length > 0) {
                     return (
@@ -350,7 +350,7 @@ export default function ArticlesPage() {
                     className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
                   >
                     <option value="">Select category</option>
-                    {categories.filter((c: any) => !c.parent && c.type === 'article').map((parentCat: any) => {
+                    {categories.filter((c: any) => !c.parent).map((parentCat: any) => {
                       const children = categories.filter((c: any) => c.parent?.id === parentCat.id);
                       if (children.length > 0) {
                         return (

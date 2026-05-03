@@ -14,17 +14,11 @@ export class VideosService {
   ) {}
 
   findAll() {
-    return this.repo.find({
-      relations: ['category'],
-      order: { date: 'DESC' },
-    });
+    return this.repo.find({ order: { date: 'DESC' } });
   }
 
   async findOne(id: number) {
-    const video = await this.repo.findOne({
-      where: { id },
-      relations: ['category'],
-    });
+    const video = await this.repo.findOne({ where: { id } });
     if (!video) throw new NotFoundException('Video not found');
     return video;
   }
@@ -36,19 +30,14 @@ export class VideosService {
       title: meta.title,
       views: meta.views,
       thumbnailUrl: meta.thumbnailUrl,
-      category: { id: dto.categoryId } as any,
+      category: dto.category,
     });
     return this.repo.save(video);
   }
 
   async update(id: number, dto: UpdateVideoDto) {
-    const { categoryId, ...rest } = dto;
-    const updateData: any = { ...rest };
-    if (categoryId) {
-      updateData.category = { id: categoryId };
-    }
     await this.findOne(id);
-    await this.repo.save({ id, ...updateData });
+    await this.repo.update(id, dto);
     return this.findOne(id);
   }
 

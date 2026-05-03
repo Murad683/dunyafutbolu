@@ -10,11 +10,6 @@ export class CreateCategoryDto {
   @IsString()
   label: string;
 
-  @ApiProperty({ enum: ['article', 'video', 'league'], default: 'article' })
-  @IsString()
-  @IsOptional()
-  type?: 'article' | 'video' | 'league';
-
   @ApiPropertyOptional({ example: 1, description: 'ID of the parent category' })
   @IsOptional()
   @IsNumber()

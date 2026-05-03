@@ -5,11 +5,11 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { Pencil, X } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../lib/api';
-import type { Video, Category } from '../lib/types';
+import type { Video } from '../lib/types';
 
 interface VideoFormValues {
   youtubeUrl: string;
-  categoryId: string;
+  category: string;
 }
 
 export default function VideosPage() {
@@ -18,26 +18,21 @@ export default function VideosPage() {
   const [editingVideo, setEditingVideo] = useState<Video | null>(null);
 
   const { register, handleSubmit, reset } = useForm<VideoFormValues>({
-    defaultValues: { youtubeUrl: '', categoryId: '' },
+    defaultValues: { youtubeUrl: '', category: '' },
   });
 
   const editForm = useForm<VideoFormValues>({
-    defaultValues: { youtubeUrl: '', categoryId: '' },
+    defaultValues: { youtubeUrl: '', category: '' },
   });
 
   useEffect(() => {
     if (editingVideo) {
       editForm.reset({
         youtubeUrl: `https://www.youtube.com/watch?v=${editingVideo.youtubeId}`,
-        categoryId: String(editingVideo.category.id),
+        category: editingVideo.category,
       });
     }
   }, [editingVideo, editForm]);
-
-  const categoriesQuery = useQuery({
-    queryKey: ['categories'],
-    queryFn: async () => (await api.get<Category[]>('/categories')).data,
-  });
 
   const videosQuery = useQuery({
     queryKey: ['videos'],
@@ -114,17 +109,11 @@ export default function VideosPage() {
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">Category</label>
-            <select
-              {...register('categoryId', { required: true })}
+            <input
+              {...register('category', { required: true })}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
-            >
-              <option value="">Select category</option>
-              {(categoriesQuery.data || []).filter(c => c.type === 'video').map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.label}
-                </option>
-              ))}
-            </select>
+              placeholder="Xülasə"
+            />
           </div>
           <button
             type="submit"
@@ -145,7 +134,7 @@ export default function VideosPage() {
               <div>
                 <h3 className="text-sm font-medium text-gray-900">{video.title}</h3>
                 <p className="mt-1 text-xs text-gray-500">
-                  {video.views} views · {video.category?.label}
+                  {video.views} views · {video.category}
                 </p>
               </div>
               <div className="flex items-center justify-between">
@@ -200,17 +189,10 @@ export default function VideosPage() {
               </div>
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">Category</label>
-                <select
-                  {...editForm.register('categoryId', { required: true })}
+                <input
+                  {...editForm.register('category', { required: true })}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
-                >
-                  <option value="">Select category</option>
-                  {(categoriesQuery.data || []).filter(c => c.type === 'video').map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.label}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
               <div className="pt-2 flex items-center justify-end gap-3">
                 <Dialog.Close className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50">

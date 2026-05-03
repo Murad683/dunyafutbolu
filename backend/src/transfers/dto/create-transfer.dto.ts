@@ -1,4 +1,4 @@
-import { IsString, IsIn, IsOptional, IsNumber } from 'class-validator';
+import { IsString, IsIn, IsOptional } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateTransferDto {
@@ -28,9 +28,9 @@ export class CreateTransferDto {
   @IsString()
   fee: string;
 
-  @ApiProperty({ example: 1, description: 'ID of the league category' })
-  @IsNumber()
-  leagueId: number;
+  @ApiProperty()
+  @IsString()
+  league: string;
 
   @ApiProperty()
   @IsString()

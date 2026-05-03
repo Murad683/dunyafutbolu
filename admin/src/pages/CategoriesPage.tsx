@@ -4,7 +4,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as Dialog from '@radix-ui/react-dialog';
 import { Pencil, X } from 'lucide-react';
 import { toast } from 'sonner';
-import { clsx } from 'clsx';
 import api from '../lib/api';
 import type { Category } from '../lib/types';
 
@@ -17,7 +16,6 @@ const PARENT_OPTIONS = [
 interface CategoryFormValues {
   slug: string;
   label: string;
-  type: 'article' | 'video' | 'league';
   parentSlug: string;
 }
 
@@ -32,11 +30,11 @@ export default function CategoriesPage() {
     reset,
     formState: { isSubmitting },
   } = useForm<CategoryFormValues>({
-    defaultValues: { slug: '', label: '', type: 'article', parentSlug: PARENT_OPTIONS[0].slug },
+    defaultValues: { slug: '', label: '', parentSlug: PARENT_OPTIONS[0].slug },
   });
 
   const editForm = useForm<CategoryFormValues>({
-    defaultValues: { slug: '', label: '', type: 'article', parentSlug: PARENT_OPTIONS[0].slug },
+    defaultValues: { slug: '', label: '', parentSlug: PARENT_OPTIONS[0].slug },
   });
 
   useEffect(() => {
@@ -44,7 +42,6 @@ export default function CategoriesPage() {
       editForm.reset({
         slug: editingCategory.slug,
         label: editingCategory.label,
-        type: editingCategory.type,
         parentSlug: editingCategory.parent?.slug || PARENT_OPTIONS[0].slug,
       });
     }
@@ -136,24 +133,11 @@ export default function CategoriesPage() {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Type</label>
+            <label className="mb-1 block text-sm font-medium text-gray-700">Parent Category</label>
             <select
-              {...register('type', { required: true })}
+              {...register('parentSlug', { required: true })}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
             >
-              <option value="article">Article (News)</option>
-              <option value="video">Video</option>
-              <option value="league">League (Transfer)</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Parent Category (News only)</label>
-            <select
-              {...register('parentSlug')}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
-            >
-              <option value="">None</option>
               {PARENT_OPTIONS.map(opt => (
                 <option key={opt.slug} value={opt.slug}>{opt.label}</option>
               ))}
@@ -177,7 +161,6 @@ export default function CategoriesPage() {
             <tr>
               <th className="px-4 py-3 text-left font-medium text-gray-600">Label</th>
               <th className="px-4 py-3 text-left font-medium text-gray-600">Slug</th>
-              <th className="px-4 py-3 text-left font-medium text-gray-600">Type</th>
               <th className="px-4 py-3 text-left font-medium text-gray-600">Parent</th>
               <th className="px-4 py-3" />
             </tr>
@@ -194,16 +177,6 @@ export default function CategoriesPage() {
               <tr key={category.id} className="border-b border-gray-100 last:border-b-0">
                 <td className="px-4 py-3 font-medium text-gray-900">{category.label}</td>
                 <td className="px-4 py-3 text-gray-500">{category.slug}</td>
-                <td className="px-4 py-3">
-                  <span className={clsx(
-                    "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize",
-                    category.type === 'article' ? "bg-blue-50 text-blue-700" :
-                    category.type === 'video' ? "bg-purple-50 text-purple-700" :
-                    "bg-amber-50 text-amber-700"
-                  )}>
-                    {category.type}
-                  </span>
-                </td>
                 <td className="px-4 py-3 text-gray-500">{category.parent?.label || '—'}</td>
                 <td className="px-4 py-3 text-right">
                   <div className="flex items-center justify-end gap-3">
@@ -261,24 +234,11 @@ export default function CategoriesPage() {
               </div>
 
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">Type</label>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Parent Category</label>
                 <select
-                  {...editForm.register('type', { required: true })}
+                  {...editForm.register('parentSlug', { required: true })}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
                 >
-                  <option value="article">Article (News)</option>
-                  <option value="video">Video</option>
-                  <option value="league">League (Transfer)</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">Parent Category (News only)</label>
-                <select
-                  {...editForm.register('parentSlug')}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
-                >
-                  <option value="">None</option>
                   {PARENT_OPTIONS.map(opt => (
                     <option key={opt.slug} value={opt.slug}>{opt.label}</option>
                   ))}
