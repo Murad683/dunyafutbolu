@@ -1,14 +1,10 @@
+import { PartialType, ApiPropertyOptional } from '@nestjs/swagger';
+import { CreateVideoDto } from './create-video.dto';
 import { IsString, IsOptional } from 'class-validator';
-import { ApiPropertyOptional } from '@nestjs/swagger';
 
-export class UpdateVideoDto {
+export class UpdateVideoDto extends PartialType(CreateVideoDto) {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   title?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  category?: string;
 }
