@@ -26,7 +26,7 @@ import { SettingsModule } from './settings/settings.module';
             url: databaseUrl,
             ssl,
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
-            synchronize: true,
+            synchronize: false,
           };
         }
 
