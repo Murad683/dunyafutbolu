@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as Dialog from '@radix-ui/react-dialog';
-import { Pencil, X } from 'lucide-react';
+import { Pencil, X, Shield, Calendar, ArrowRightLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import ImageUploadField from '../components/common/ImageUploadField';
 import api from '../lib/api';
-import type { Transfer, TransferType } from '../lib/types';
+import type { Transfer, TransferType, Category } from '../lib/types';
 
 interface TransferFormValues {
   playerName: string;

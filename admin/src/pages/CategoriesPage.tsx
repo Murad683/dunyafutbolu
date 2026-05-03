@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as Dialog from '@radix-ui/react-dialog';
 import { Pencil, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { clsx } from 'clsx';
 import api from '../lib/api';
 import type { Category } from '../lib/types';
 

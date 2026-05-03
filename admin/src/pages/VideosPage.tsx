@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as Dialog from '@radix-ui/react-dialog';
-import { Pencil, X } from 'lucide-react';
+import { Pencil, X, Play } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../lib/api';
-import type { Video } from '../lib/types';
+import type { Video, Category } from '../lib/types';
 
 interface VideoFormValues {
   youtubeUrl: string;
