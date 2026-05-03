@@ -1,12 +1,12 @@
-import { Injectable, NotFoundException, OnModuleInit, Logger } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Transfer } from './entities/transfer.entity';
 import { CreateTransferDto } from './dto/create-transfer.dto';
 import { UpdateTransferDto } from './dto/update-transfer.dto';
 
 @Injectable()
-export class TransfersService implements OnModuleInit {
+export class TransfersService {
   private readonly logger = new Logger(TransfersService.name);
   constructor(@InjectRepository(Transfer) private repo: Repository<Transfer>) {}
 
