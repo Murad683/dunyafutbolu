@@ -1,13 +1,38 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, OnModuleInit, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { Transfer } from './entities/transfer.entity';
 import { CreateTransferDto } from './dto/create-transfer.dto';
 import { UpdateTransferDto } from './dto/update-transfer.dto';
 
 @Injectable()
-export class TransfersService {
+export class TransfersService implements OnModuleInit {
+  private readonly logger = new Logger(TransfersService.name);
   constructor(@InjectRepository(Transfer) private repo: Repository<Transfer>) {}
+
+  async onModuleInit() {
+    this.logger.log('Checking for legacy transfer types to migrate...');
+    
+    // Migrate 'giriş' and 'çıxış' to 'Daimi Transfer'
+    const legacyToDaimi = await this.repo.update(
+      { type: In(['giriş', 'çıxış']) as any },
+      { type: 'Daimi Transfer' }
+    );
+    if (legacyToDaimi.affected) {
+      this.logger.log(`Migrated ${legacyToDaimi.affected} transfers to "Daimi Transfer"`);
+    }
+
+    // Migrate 'icarə' (lowercase) to 'İcarə' (Capitalized)
+    const legacyToIcare = await this.repo.update(
+      { type: 'icarə' as any },
+      { type: 'İcarə' }
+    );
+    if (legacyToIcare.affected) {
+      this.logger.log(`Migrated ${legacyToIcare.affected} transfers to "İcarə"`);
+    }
+
+    this.logger.log('Transfer migration check complete.');
+  }
 
   findAll() {
     return this.repo.find({ order: { date: 'DESC' } });

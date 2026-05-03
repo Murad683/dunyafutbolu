@@ -31,8 +31,8 @@ export class Transfer {
   @Column()
   image: string;
 
-  @Column({ type: 'enum', enum: ['Daimi Transfer', 'İcarə', 'Mübadilə', 'Digər'] })
-  type: TransferType;
+  @Column({ type: 'varchar' })
+  type: string;
 
   @CreateDateColumn()
   date: Date;
