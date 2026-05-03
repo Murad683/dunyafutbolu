@@ -11,27 +11,35 @@ export class TransfersService implements OnModuleInit {
   constructor(@InjectRepository(Transfer) private repo: Repository<Transfer>) {}
 
   async onModuleInit() {
-    this.logger.log('Checking for legacy transfer types to migrate...');
+    this.logger.log('Force migrating transfer table to bypass enum constraints...');
     
-    // Migrate 'giriş' and 'çıxış' to 'Daimi Transfer'
-    const legacyToDaimi = await this.repo.update(
-      { type: In(['giriş', 'çıxış']) as any },
-      { type: 'Daimi Transfer' }
-    );
-    if (legacyToDaimi.affected) {
-      this.logger.log(`Migrated ${legacyToDaimi.affected} transfers to "Daimi Transfer"`);
-    }
+    try {
+      // 1. Force the column to be varchar using Raw SQL (this bypasses enum checks)
+      await this.repo.query('ALTER TABLE "transfers" ALTER COLUMN "type" TYPE varchar');
+      
+      // 2. Now perform the data migration
+      // Migrate 'giriş' and 'çıxış' to 'Daimi Transfer'
+      const legacyToDaimi = await this.repo.update(
+        { type: In(['giriş', 'çıxış']) as any },
+        { type: 'Daimi Transfer' }
+      );
+      if (legacyToDaimi.affected) {
+        this.logger.log(`Migrated ${legacyToDaimi.affected} transfers to "Daimi Transfer"`);
+      }
 
-    // Migrate 'icarə' (lowercase) to 'İcarə' (Capitalized)
-    const legacyToIcare = await this.repo.update(
-      { type: 'icarə' as any },
-      { type: 'İcarə' }
-    );
-    if (legacyToIcare.affected) {
-      this.logger.log(`Migrated ${legacyToIcare.affected} transfers to "İcarə"`);
-    }
+      // Migrate 'icarə' (lowercase) to 'İcarə' (Capitalized)
+      const legacyToIcare = await this.repo.update(
+        { type: 'icarə' as any },
+        { type: 'İcarə' }
+      );
+      if (legacyToIcare.affected) {
+        this.logger.log(`Migrated ${legacyToIcare.affected} transfers to "İcarə"`);
+      }
 
-    this.logger.log('Transfer migration check complete.');
+      this.logger.log('Transfer migration check complete.');
+    } catch (err) {
+      this.logger.error('Migration failed:', err.message);
+    }
   }
 
   findAll() {
