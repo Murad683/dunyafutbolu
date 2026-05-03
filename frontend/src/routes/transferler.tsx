@@ -22,7 +22,7 @@ export interface Transfer {
   fee: string;
   type: "Daimi Transfer" | "İcarə" | "Mübadilə" | "Digər";
   date: string;
-  league: string;
+  league: { id: number; label: string; slug: string };
 }
 
 
@@ -47,14 +47,7 @@ const TYPE_FILTERS: { label: string; value: string }[] = [
   { label: "Digər", value: "Digər" },
 ];
 
-const LEAGUE_FILTERS = [
-  "Hamısı",
-  "Premyer Liqa",
-  "İngiltərə Premyer Liqası",
-  "İspaniya La Liqası",
-  "İtaliya Seriya A",
-  "Almaniya Bundesliqa",
-];
+// Static leagues are removed in favor of dynamic categories with type 'league'
 
 function getTypeIcon(type: Transfer["type"]) {
   switch (type) {
@@ -84,11 +77,14 @@ function getTypeBadgeClass(type: Transfer["type"]) {
 
 function TransferlerPage() {
   const [typeFilter, setTypeFilter] = useState("all");
-  const [leagueFilter, setLeagueFilter] = useState("Hamısı");
+  const [leagueFilter, setLeagueFilter] = useState("all");
   const [transfers, setTransfers] = useState<Transfer[]>([]);
+  const [leagues, setLeagues] = useState<{ id: number; label: string }[]>([]);
 
   useEffect(() => {
     let cancelled = false;
+    
+    // Fetch transfers
     api
       .get<ApiTransfer[]>("/transfers")
       .then((res) => {
@@ -97,15 +93,25 @@ function TransferlerPage() {
         }
       })
       .catch(() => {
-        console.warn("[Transfers] API unavailable, using mock data");
+        console.warn("[Transfers] API unavailable");
       });
+
+    // Fetch league categories
+    api.get<any[]>("/categories")
+      .then(res => {
+        if (!cancelled) {
+          const leagueCats = res.data.filter(c => c.type === 'league');
+          setLeagues(leagueCats.map(c => ({ id: c.id, label: c.label })));
+        }
+      });
+
     return () => { cancelled = true; };
   }, []);
 
   const filtered = useMemo(() => {
     return transfers.filter((t) => {
       const matchType = typeFilter === "all" || t.type === typeFilter;
-      const matchLeague = leagueFilter === "Hamısı" || t.league === leagueFilter;
+      const matchLeague = leagueFilter === "all" || String(t.league?.id) === leagueFilter;
       return matchType && matchLeague;
     });
   }, [typeFilter, leagueFilter, transfers]);
@@ -161,9 +167,10 @@ function TransferlerPage() {
                 className="h-9 px-3 rounded-input border border-surface-border bg-surface-white text-sm text-text-primary focus:outline-none focus:border-brand-red transition-colors cursor-pointer"
                 aria-label="Liqa filtri"
               >
-                {LEAGUE_FILTERS.map((l) => (
-                  <option key={l} value={l}>
-                    {l}
+                <option value="all">Bütün Liqalar</option>
+                {leagues.map((l) => (
+                  <option key={l.id} value={String(l.id)}>
+                    {l.label}
                   </option>
                 ))}
               </select>
@@ -225,7 +232,7 @@ function TransferlerPage() {
                         <div className="flex items-center gap-3 text-meta text-text-muted">
                           <span className="font-semibold text-brand-red">{t.fee}</span>
                           <span aria-hidden>·</span>
-                          <span>{t.league}</span>
+                          <span>{t.league?.label}</span>
                           <span aria-hidden>·</span>
                           <span className="flex items-center gap-1">
                             <Calendar size={11} aria-hidden />

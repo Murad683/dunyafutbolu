@@ -6,6 +6,7 @@ export interface Category {
   id: number;
   slug: string;
   label: string;
+  type: 'article' | 'video' | 'league';
   parent?: Category;
 }
 
@@ -32,7 +33,7 @@ export interface Transfer {
   toClub: string;
   toClubLogo?: string;
   fee: string;
-  league: string;
+  league: Category;
   image: string;
   type: TransferType;
   date: string;
@@ -42,7 +43,7 @@ export interface Video {
   id: number;
   youtubeId: string;
   title: string;
-  category: string;
+  category: Category;
   views: string;
   thumbnailUrl: string;
   date: string;

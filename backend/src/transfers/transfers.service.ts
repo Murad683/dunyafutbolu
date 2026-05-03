@@ -11,22 +11,38 @@ export class TransfersService {
   constructor(@InjectRepository(Transfer) private repo: Repository<Transfer>) {}
 
   findAll() {
-    return this.repo.find({ order: { date: 'DESC' } });
+    return this.repo.find({
+      relations: ['league'],
+      order: { date: 'DESC' },
+    });
   }
 
   async findOne(id: number) {
-    const transfer = await this.repo.findOne({ where: { id } });
+    const transfer = await this.repo.findOne({
+      where: { id },
+      relations: ['league'],
+    });
     if (!transfer) throw new NotFoundException('Transfer not found');
     return transfer;
   }
 
   create(dto: CreateTransferDto) {
-    return this.repo.save(dto);
+    const { leagueId, ...rest } = dto;
+    const transfer = this.repo.create({
+      ...rest,
+      league: { id: leagueId } as any,
+    });
+    return this.repo.save(transfer);
   }
 
   async update(id: number, dto: UpdateTransferDto) {
+    const { leagueId, ...rest } = dto;
+    const updateData: any = { ...rest };
+    if (leagueId) {
+      updateData.league = { id: leagueId };
+    }
     await this.findOne(id);
-    await this.repo.update(id, dto);
+    await this.repo.save({ id, ...updateData });
     return this.findOne(id);
   }
 

@@ -9,7 +9,7 @@ import type { Video } from '../lib/types';
 
 interface VideoFormValues {
   youtubeUrl: string;
-  category: string;
+  categoryId: string;
 }
 
 export default function VideosPage() {
@@ -18,21 +18,26 @@ export default function VideosPage() {
   const [editingVideo, setEditingVideo] = useState<Video | null>(null);
 
   const { register, handleSubmit, reset } = useForm<VideoFormValues>({
-    defaultValues: { youtubeUrl: '', category: '' },
+    defaultValues: { youtubeUrl: '', categoryId: '' },
   });
 
   const editForm = useForm<VideoFormValues>({
-    defaultValues: { youtubeUrl: '', category: '' },
+    defaultValues: { youtubeUrl: '', categoryId: '' },
   });
 
   useEffect(() => {
     if (editingVideo) {
       editForm.reset({
         youtubeUrl: `https://www.youtube.com/watch?v=${editingVideo.youtubeId}`,
-        category: editingVideo.category,
+        categoryId: String(editingVideo.category.id),
       });
     }
   }, [editingVideo, editForm]);
+
+  const categoriesQuery = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => (await api.get<Category[]>('/categories')).data,
+  });
 
   const videosQuery = useQuery({
     queryKey: ['videos'],
@@ -109,11 +114,17 @@ export default function VideosPage() {
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">Category</label>
-            <input
-              {...register('category', { required: true })}
+            <select
+              {...register('categoryId', { required: true })}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
-              placeholder="Xülasə"
-            />
+            >
+              <option value="">Select category</option>
+              {(categoriesQuery.data || []).filter(c => c.type === 'video').map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.label}
+                </option>
+              ))}
+            </select>
           </div>
           <button
             type="submit"
@@ -134,7 +145,7 @@ export default function VideosPage() {
               <div>
                 <h3 className="text-sm font-medium text-gray-900">{video.title}</h3>
                 <p className="mt-1 text-xs text-gray-500">
-                  {video.views} views · {video.category}
+                  {video.views} views · {video.category?.label}
                 </p>
               </div>
               <div className="flex items-center justify-between">
@@ -189,10 +200,17 @@ export default function VideosPage() {
               </div>
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">Category</label>
-                <input
-                  {...editForm.register('category', { required: true })}
+                <select
+                  {...editForm.register('categoryId', { required: true })}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
-                />
+                >
+                  <option value="">Select category</option>
+                  {(categoriesQuery.data || []).filter(c => c.type === 'video').map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.label}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className="pt-2 flex items-center justify-end gap-3">
                 <Dialog.Close className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50">

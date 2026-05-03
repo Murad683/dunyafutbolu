@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne } from 'typeorm';
+import { Category } from '../../categories/entities/category.entity';
 
 export type TransferType = 'Daimi Transfer' | 'İcarə' | 'Mübadilə' | 'Digər';
 
@@ -25,8 +26,8 @@ export class Transfer {
   @Column({ default: 'N/A' })
   fee: string;
 
-  @Column()
-  league: string;
+  @ManyToOne(() => Category, { eager: true, nullable: false, onDelete: 'RESTRICT' })
+  league: Category;
 
   @Column()
   image: string;

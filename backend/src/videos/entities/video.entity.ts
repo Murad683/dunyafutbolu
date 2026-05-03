@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne } from 'typeorm';
+import { Category } from '../../categories/entities/category.entity';
 
 @Entity('videos')
 export class Video {
@@ -11,8 +12,8 @@ export class Video {
   @Column()
   title: string;
 
-  @Column()
-  category: string;
+  @ManyToOne(() => Category, { eager: true, nullable: false, onDelete: 'RESTRICT' })
+  category: Category;
 
   @Column({ default: '0' })
   views: string;

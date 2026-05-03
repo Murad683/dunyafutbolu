@@ -15,7 +15,7 @@ interface TransferFormValues {
   toClub: string;
   toClubLogo?: string;
   fee: string;
-  league: string;
+  leagueId: string;
   image: string;
   type: TransferType;
 }
@@ -42,7 +42,7 @@ export default function TransfersPage() {
       toClub: '',
       toClubLogo: '',
       fee: 'N/A',
-      league: '',
+      leagueId: '',
       image: '',
       type: 'Daimi Transfer',
     },
@@ -56,7 +56,7 @@ export default function TransfersPage() {
       toClub: '',
       toClubLogo: '',
       fee: 'N/A',
-      league: '',
+      leagueId: '',
       image: '',
       type: 'Daimi Transfer',
     },
@@ -71,12 +71,17 @@ export default function TransfersPage() {
         toClub: editingTransfer.toClub,
         toClubLogo: editingTransfer.toClubLogo || '',
         fee: editingTransfer.fee,
-        league: editingTransfer.league,
+        leagueId: String(editingTransfer.league.id),
         image: editingTransfer.image,
         type: editingTransfer.type as TransferType,
       });
     }
   }, [editingTransfer, editForm]);
+
+  const categoriesQuery = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => (await api.get<Category[]>('/categories')).data,
+  });
 
   const transfersQuery = useQuery({
     queryKey: ['transfers'],
@@ -167,10 +172,17 @@ export default function TransfersPage() {
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700">League</label>
-              <input
-                {...register('league', { required: true })}
+              <select
+                {...register('leagueId', { required: true })}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
-              />
+              >
+                <option value="">Select league</option>
+                {transfersQuery.data && Array.from(new Set((categoriesQuery.data || []).filter(c => c.type === 'league'))).map((league) => (
+                  <option key={league.id} value={league.id}>
+                    {league.label}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700">Transfer Type</label>
@@ -244,11 +256,9 @@ export default function TransfersPage() {
                     <span className="font-medium text-gray-900">{transfer.playerName}</span>
                   </div>
                 </td>
-                <td className="px-4 py-3 text-gray-500">
-                  {transfer.fromClub} → {transfer.toClub}
-                </td>
+                <td className="px-4 py-3 text-gray-500">{transfer.fromClub} → {transfer.toClub}</td>
                 <td className="px-4 py-3 text-gray-500">{transfer.fee}</td>
-                <td className="px-4 py-3 text-gray-500">{transfer.league}</td>
+                <td className="px-4 py-3 text-gray-500">{transfer.league?.label}</td>
                 <td className="px-4 py-3 text-gray-500">{transfer.type}</td>
                 <td className="px-4 py-3 text-right">
                   <div className="flex items-center justify-end gap-3">
@@ -322,10 +332,17 @@ export default function TransfersPage() {
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium text-gray-700">League</label>
-                  <input
-                    {...editForm.register('league', { required: true })}
+                  <select
+                    {...editForm.register('leagueId', { required: true })}
                     className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
-                  />
+                  >
+                    <option value="">Select league</option>
+                    {(categoriesQuery.data || []).filter(c => c.type === 'league').map((league) => (
+                      <option key={league.id} value={league.id}>
+                        {league.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium text-gray-700">Transfer Type</label>
