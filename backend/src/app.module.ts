@@ -26,7 +26,7 @@ import { SettingsModule } from './settings/settings.module';
             url: databaseUrl,
             ssl,
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
-            synchronize: false,
+            synchronize: true,
           };
         }
 
@@ -38,7 +38,7 @@ import { SettingsModule } from './settings/settings.module';
           password: c.get<string>('DB_PASSWORD') || 'postgres',
           database: c.get<string>('DB_NAME') || 'dunyafutbolu',
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
-          synchronize: false,
+          synchronize: true,
         };
       },
       inject: [ConfigService],
