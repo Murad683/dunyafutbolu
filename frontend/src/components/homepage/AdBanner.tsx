@@ -47,10 +47,10 @@ export function AdBanner({ variant = "horizontal" }: AdBannerProps) {
         href={banner.linkUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className={clsx("block w-full overflow-hidden rounded-card shadow-sm bg-surface-off/50", isSky ? "h-[350px]" : "h-auto sm:h-[90px] flex items-center justify-center")}
+        className={clsx("block w-full overflow-hidden rounded-card shadow-sm bg-surface-off/50 transition-transform hover:opacity-95", isSky ? "h-[350px]" : "h-auto flex items-center justify-center")}
         title={banner.title}
       >
-        <img src={getImageUrl(banner.imageUrl)} alt={banner.title} className={clsx("block mx-auto", isSky ? "w-full h-full object-cover" : "max-w-full h-auto")} />
+        <img src={getImageUrl(banner.imageUrl)} alt={banner.title} className={clsx("block mx-auto", isSky ? "w-full h-full object-cover" : "w-full h-auto")} />
       </a>
     );
   }
@@ -59,7 +59,7 @@ export function AdBanner({ variant = "horizontal" }: AdBannerProps) {
     <div
       className={clsx(
         "w-full bg-surface-light border-2 border-dashed border-surface-border rounded-card flex flex-col items-center justify-center gap-2",
-        isSky ? "h-[350px]" : "h-auto py-4 sm:h-[90px]",
+        isSky ? "h-[350px]" : "h-[90px]",
       )}
       aria-label="Reklam yeri"
     >
